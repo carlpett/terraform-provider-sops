@@ -1,3 +1,7 @@
+[[constraint]]
+  name = "go.mozilla.org/sops"
+  source = "github.com/mozilla/sops"
+  branch = "master"
 
 [prune]
   go-tests = true
