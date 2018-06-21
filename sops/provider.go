@@ -10,6 +10,5 @@ func Provider() terraform.ResourceProvider {
 		DataSourcesMap: map[string]*schema.Resource{
 			"sops_file": dataSourceFile(),
 		},
-		ConfigureFunc: configureProvider,
 	}
 }

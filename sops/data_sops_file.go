@@ -8,6 +8,7 @@ import (
 
 	"github.com/hashicorp/terraform/helper/schema"
 	"go.mozilla.org/sops/decrypt"
+	"gopkg.in/yaml.v2"
 )
 
 func dataSourceFile() *schema.Resource {
@@ -61,7 +62,14 @@ func dataSourceFileRead(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	var data map[string]interface{}
-	err = json.Unmarshal(cleartext, &data)
+	switch format {
+	case "json":
+		err = json.Unmarshal(cleartext, &data)
+	case "yaml":
+		yaml.Unmarshal(cleartext, &data)
+	default:
+		return fmt.Errorf("Don't know how to unmarshal format %s", format)
+	}
 	if err != nil {
 		return err
 	}
