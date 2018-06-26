@@ -21,6 +21,6 @@ test:
 
 build:
 	@echo ">> building binaries"
-	@go build -o terraform-provider-sops
+	@CGO_ENABLED=0 go build -o terraform-provider-sops
 
 .PHONY: all style format build vet
