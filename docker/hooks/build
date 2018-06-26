@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -eufo pipefail
+if ! echo ${DOCKER_TAG} | grep -qE '^v[0-9\.]+'; then
+	# If the tag is not a version, use the version of the latest tag
+	git fetch --tags --unshallow >/dev/null
+	export DOCKER_TAG=$(git describe --tags --abbrev=0 --match='v*')
+	echo "Using plugin version ${DOCKER_TAG}"
+fi
+docker build --build-arg "SOPS_PLUGIN_VERSION=${DOCKER_TAG}" -t "${IMAGE_NAME}" .
