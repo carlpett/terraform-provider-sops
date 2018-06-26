@@ -1,0 +1,36 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/golang:1.10
+    working_directory: /go/src/github.com/carlpett/terraform-sops
+    steps:
+      - checkout
+      - run: make build
+      - store_artifacts:
+          path: terraform-provider-sops
+  release:
+    docker:
+      - image: circleci/golang:1.10
+    working_directory: /go/src/github.com/carlpett/terraform-sops
+    steps:
+      - checkout
+      - run: make build
+      - run:
+          name: Download github-release tool
+          command: curl -sL 'https://github.com/aktau/github-release/releases/download/v0.6.2/linux-amd64-github-release.tar.bz2' | tar xjf - --strip-components 3 -C /go/bin
+      - run: github-release upload --user carlpett --repo terraform-sops --tag $CIRCLE_TAG --name terraform-provider-sops_$CIRCLE_TAG-linux-amd64 --file terraform-provider-sops
+      - store_artifacts:
+          path: terraform-provider-sops
+
+workflows:
+  version: 2
+  build_and_release:
+    jobs:
+      - build
+      - release:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
