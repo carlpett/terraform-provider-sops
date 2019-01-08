@@ -74,11 +74,42 @@ func dataSourceFileRead(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 
-	err = d.Set("data", data)
+	err = d.Set("data", flatten(data))
 	if err != nil {
 		return err
 	}
 
 	d.SetId("-")
 	return nil
+}
+
+// flatten flattens the nested struct.
+//
+// All keys will be joined by dot
+// e.g. {"a": {"b":"c"}} => {"a.b":"c"}
+func flatten(data map[string]interface{}) map[string]string {
+	flattened := map[string]string{}
+	for key, value := range data {
+		switch t := value.(type) {
+		case string, int:
+			flattened[key] = fmt.Sprint(t)
+		case map[interface{}]interface{}:
+			f := flatten(convertMap(t))
+			for k, v := range f {
+				// Join all keys with dot
+				flattened[fmt.Sprintf("%s.%s", key, k)] = v
+			}
+		default:
+			fmt.Printf("unexpected type %T", t)
+		}
+	}
+	return flattened
+}
+
+func convertMap(originalMap map[interface{}]interface{}) map[string]interface{} {
+	convertedMap := map[string]interface{}{}
+	for key, value := range originalMap {
+		convertedMap[key.(string)] = value
+	}
+	return convertedMap
 }

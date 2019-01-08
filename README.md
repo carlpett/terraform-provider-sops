@@ -8,7 +8,8 @@ Encrypt a file using Sops: `sops demo-secret.enc.json`
 
 ``` json
 {
-  "password": "foo"
+  "password": "foo",
+  "db": {"password": "bar"}
 }
 ```
 
@@ -23,6 +24,10 @@ data "sops_file" "demo-secret" {
 
 output "do-something" {
   value = "${data.sops_file.demo-secret.data.password}"
+}
+
+output "do-something2" {
+  value = "${data.sops_file.demo-secret.data.db.password}"
 }
 ```
 
