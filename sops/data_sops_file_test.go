@@ -56,3 +56,28 @@ func TestDataSourceSopsFile_nested(t *testing.T) {
 		},
 	})
 }
+
+const configTestDataSourceSopsFile_raw = `
+data "sops_file" "test_raw" {
+  source_file = "%s/test-fixtures/raw.txt"
+  input_type = "raw"
+}`
+
+func TestDataSourceSopsFile_raw(t *testing.T) {
+	wd, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	config := fmt.Sprintf(configTestDataSourceSopsFile_raw, wd)
+	resource.UnitTest(t, resource.TestCase{
+		Providers: testAccProviders,
+		Steps: []resource.TestStep{
+			{
+				Config: config,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("data.sops_file.test_raw", "raw", "Hello raw world!"),
+				),
+			},
+		},
+	})
+}

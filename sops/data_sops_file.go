@@ -31,6 +31,10 @@ func dataSourceFile() *schema.Resource {
 				Type:     schema.TypeMap,
 				Computed: true,
 			},
+			"raw": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -52,7 +56,7 @@ func dataSourceFileRead(d *schema.ResourceData, meta interface{}) error {
 		case ".yaml":
 			format = "yaml"
 		default:
-			return fmt.Errorf("Don't know how to decode file with extension %s", ext)
+			return fmt.Errorf("Don't know how to decode file with extension %s, set input_type to json, yaml or raw as appropriate", ext)
 		}
 	}
 
@@ -61,22 +65,29 @@ func dataSourceFileRead(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 
-	var data map[string]interface{}
-	switch format {
-	case "json":
-		err = json.Unmarshal(cleartext, &data)
-	case "yaml":
-		yaml.Unmarshal(cleartext, &data)
-	default:
-		return fmt.Errorf("Don't know how to unmarshal format %s", format)
-	}
-	if err != nil {
-		return err
-	}
+	if format != "raw" {
+		var data map[string]interface{}
+		switch format {
+		case "json":
+			err = json.Unmarshal(cleartext, &data)
+		case "yaml":
+			err = yaml.Unmarshal(cleartext, &data)
+		default:
+			return fmt.Errorf("Don't know how to unmarshal format %s", format)
+		}
+		if err != nil {
+			return err
+		}
 
-	err = d.Set("data", flatten(data))
-	if err != nil {
-		return err
+		err = d.Set("data", flatten(data))
+		if err != nil {
+			return err
+		}
+	} else {
+		err = d.Set("raw", string(cleartext))
+		if err != nil {
+			return err
+		}
 	}
 
 	d.SetId("-")
