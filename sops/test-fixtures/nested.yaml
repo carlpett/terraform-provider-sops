@@ -1,0 +1,27 @@
+db:
+    user: ENC[AES256_GCM,data:FPeD,iv:J72gLGxfRX+8PZZrD7f5/7zPQPbMgBxL7OUxyvvFH1A=,tag:qJvyhtA4MXRjUkuYMctPlg==,type:str]
+    password: ENC[AES256_GCM,data:XrL/,iv:Z/PsuhQGQVEg2ri6odjnf3aWr3U01JAz8R7MJX67Gz8=,tag:iX48abNIzKJMsxIZ3N7DKw==,type:str]
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    lastmodified: '2019-01-23T12:37:02Z'
+    mac: ENC[AES256_GCM,data:SHWOM+zYaRt9e3jEiQK6bUgjEejoRm25CvWH1z1iYhvLzavmBbaCT+L0W7kw9pLZlTSXlGJfJW94sd5LFUgZ/cDvzy/IwNeU292wN9zeq0It2aTQtBWoKY+djjB3A1OoEiNoi/EBld4JfX81Jf5CCUT/LZevTawkig3URhmaIH8=,iv:WOG0Ssd0RoVpPwY8PFN7iKvSRNkmqsBIgA5xqtGs+xE=,tag:ZfV7UjxjmgXAWeWqn2u/FA==,type:str]
+    pgp:
+    -   created_at: '2019-01-23T10:01:20Z'
+        enc: |-
+            -----BEGIN PGP MESSAGE-----
+
+            wcBMA/FdPFBXWyBuAQgAhJwnHuIY66QdnnWx2Nh6nzhBMogJtKLT4qA7ostnfMXX
+            Qo1oTd5OAKT16dDZCUl8TMZqnQUzdDaVQ7H/rUOJ38EfkZBTr120JOoJuCbrUBTt
+            uLEPrpgrUF8KSnRBuwnRECfU7jEi8QEwbKL4zQJREHf5I5O1iS4ZNg4h/5O7JHC/
+            Hfg/pqmwN1LtEZvJZDen9CMipsO0fHqR2N4UDYuDimwIlMi0ziaq6pO0T+PlNQdn
+            a9nzZwKk0pQOl80YRZQHZbSPpegOXwyFSMXKn/xfGo4YVjmpGJ5aO9ZJMLWylMgb
+            VI8EzHu2ftskyGuykoOboSYAoIRb/LgGCMS4amfvmdLgAeSj/tqpz3VZdubUot9i
+            fysa4epZ4FzgN+H+6OAp4lMnxKXgKOWPh3uUgyOo6wdgrJEYsZ2AQHNDjojedNzZ
+            HGwPrD0VM+BW5B8PY9y7GVaNNhM+V+ZouzTio5TZpOHfLQA=
+            =qDZi
+            -----END PGP MESSAGE-----
+        fp: 3CE5CC7219D6597CE6488BF1BF36CD3D0749A11A
+    unencrypted_suffix: _unencrypted
+    version: 3.2.0

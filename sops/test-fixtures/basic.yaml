@@ -1,0 +1,26 @@
+# Content is hello: world
+hello: ENC[AES256_GCM,data:gzR9Gz4=,iv:cbMZU1nUyo5mFCW+Vel2UYbnbMA/0wKxsQzy/WVAYw8=,tag:tETDJMCJYo+4K4LwsSw4Dw==,type:str]
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    lastmodified: '2019-01-23T12:24:04Z'
+    mac: ENC[AES256_GCM,data:o5djAPas9xAoEK1mrIcnPcY2isYZJDj7k0Hc6VaowFfNUyB7U3uHnHHYWuibhJAoFtr5Cq59oNC/f/O7RvppjrSG6jqxjDQhppqLZbFLi6s10evoGsRvS32OB2AUGG8UwiWf2qbFp1/9ZMtjdh6nVUeKd+pSX6foApPHeexYjfM=,iv:xqGdZzM4Khnz86oGDFAoLrK3axllUcROHaje2LMgIW8=,tag:vNDll77V9QpEZ2T/GvPnQw==,type:str]
+    pgp:
+    -   created_at: '2019-01-23T10:01:20Z'
+        enc: |-
+            -----BEGIN PGP MESSAGE-----
+
+            wcBMA/FdPFBXWyBuAQgAhJwnHuIY66QdnnWx2Nh6nzhBMogJtKLT4qA7ostnfMXX
+            Qo1oTd5OAKT16dDZCUl8TMZqnQUzdDaVQ7H/rUOJ38EfkZBTr120JOoJuCbrUBTt
+            uLEPrpgrUF8KSnRBuwnRECfU7jEi8QEwbKL4zQJREHf5I5O1iS4ZNg4h/5O7JHC/
+            Hfg/pqmwN1LtEZvJZDen9CMipsO0fHqR2N4UDYuDimwIlMi0ziaq6pO0T+PlNQdn
+            a9nzZwKk0pQOl80YRZQHZbSPpegOXwyFSMXKn/xfGo4YVjmpGJ5aO9ZJMLWylMgb
+            VI8EzHu2ftskyGuykoOboSYAoIRb/LgGCMS4amfvmdLgAeSj/tqpz3VZdubUot9i
+            fysa4epZ4FzgN+H+6OAp4lMnxKXgKOWPh3uUgyOo6wdgrJEYsZ2AQHNDjojedNzZ
+            HGwPrD0VM+BW5B8PY9y7GVaNNhM+V+ZouzTio5TZpOHfLQA=
+            =qDZi
+            -----END PGP MESSAGE-----
+        fp: 3CE5CC7219D6597CE6488BF1BF36CD3D0749A11A
+    unencrypted_suffix: _unencrypted
+    version: 3.2.0

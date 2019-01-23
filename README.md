@@ -38,3 +38,8 @@ go get github.com/carlpett/terraform-sops
 mkdir -p ~/.terraform.d/plugins
 ln -s $GOPATH/bin/terraform-sops $HOME/.terraform.d/plugins/terraform-provider-sops
 ```
+
+## Development
+Building and testing is most easily performed with `make build` and `make test` respectively.
+
+The PGP key used for encrypting the test cases is found in `test/testing-key.pgp`. You can import it with `gpg --import test/testing-key.pgp`.
