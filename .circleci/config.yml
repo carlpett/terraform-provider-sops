@@ -6,7 +6,12 @@ jobs:
     working_directory: /go/src/github.com/carlpett/terraform-sops
     steps:
       - checkout
-      - run: make build
+      - run:
+          name: Import test keys
+          command: |
+            gpg --import test/testing-key_pub.gpg
+            gpg --import test/testing-key_sec.gpg  --allow-secret-key-import
+      - run: make test build
       - store_artifacts:
           path: terraform-provider-sops
   release:
@@ -15,7 +20,12 @@ jobs:
     working_directory: /go/src/github.com/carlpett/terraform-sops
     steps:
       - checkout
-      - run: make build
+      - run:
+          name: Import test keys
+          command: |
+            gpg --import test/testing-key_pub.gpg
+            gpg --import test/testing-key_sec.gpg  --allow-secret-key-import
+      - run: make test build
       - run:
           name: Download github-release tool
           command: |
