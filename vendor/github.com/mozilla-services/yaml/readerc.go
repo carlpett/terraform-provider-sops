@@ -4,6 +4,18 @@ import (
 	"io"
 )
 
+func yaml_parser_remaining_bytes(parser *yaml_parser_t) []byte {
+	if parser.unread > 0 {
+		offset := len(parser.buffer) - parser.unread
+		if int(parser.buffer[offset]) == 0 {
+			return []byte{}
+		}
+		remaining := append(parser.buffer[offset:], parser.input[parser.input_pos:]...)
+		return remaining
+	}
+	return []byte{}
+}
+
 // Set the reader error and return 0.
 func yaml_parser_set_reader_error(parser *yaml_parser_t, problem string, offset int, value int) bool {
 	parser.error = yaml_READER_ERROR

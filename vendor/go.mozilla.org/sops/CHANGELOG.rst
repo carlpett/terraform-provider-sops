@@ -1,6 +1,25 @@
 Changelog
 =========
 
+3.2.0
+-----
+
+* Added --output flag to write output a file directly instead of
+  through stdout
+* Added support for dotenv files
+
+3.1.1
+-----
+
+* Fix incorrect version number from previous release
+
+3.1.0
+-----
+
+* Add support for Azure Key Service
+
+* Fix bug that prevented JSON escapes in input files from working
+
 3.0.5
 -----
 

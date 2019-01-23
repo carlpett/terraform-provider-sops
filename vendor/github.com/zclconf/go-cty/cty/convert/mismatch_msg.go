@@ -32,9 +32,30 @@ func MismatchMessage(got, want cty.Type) string {
 		// about their respective attributes.
 		return mismatchMessageObjects(got, want)
 
+	case got.IsTupleType() && want.IsListType() && want.ElementType() == cty.DynamicPseudoType:
+		// If conversion from tuple to list failed then it's because we couldn't
+		// find a common type to convert all of the tuple elements to.
+		return "all list elements must have the same type"
+
+	case got.IsTupleType() && want.IsSetType() && want.ElementType() == cty.DynamicPseudoType:
+		// If conversion from tuple to set failed then it's because we couldn't
+		// find a common type to convert all of the tuple elements to.
+		return "all set elements must have the same type"
+
+	case got.IsObjectType() && want.IsMapType() && want.ElementType() == cty.DynamicPseudoType:
+		// If conversion from object to map failed then it's because we couldn't
+		// find a common type to convert all of the object attributes to.
+		return "all map elements must have the same type"
+
+	case (got.IsTupleType() || got.IsObjectType()) && want.IsCollectionType():
+		return mismatchMessageCollectionsFromStructural(got, want)
+
+	case got.IsCollectionType() && want.IsCollectionType():
+		return mismatchMessageCollectionsFromCollections(got, want)
+
 	default:
 		// If we have nothing better to say, we'll just state what was required.
-		return want.FriendlyName() + " required"
+		return want.FriendlyNameForConstraint() + " required"
 	}
 }
 
@@ -91,6 +112,7 @@ func mismatchMessageObjects(got, want cty.Type) string {
 	switch {
 
 	case len(missingAttrs) != 0:
+		sort.Strings(missingAttrs)
 		switch len(missingAttrs) {
 		case 1:
 			return fmt.Sprintf("attribute %q is required", missingAttrs[0])
@@ -117,4 +139,82 @@ func mismatchMessageObjects(got, want cty.Type) string {
 		// just a generic message.
 		return "incorrect object attributes"
 	}
+}
+
+func mismatchMessageCollectionsFromStructural(got, want cty.Type) string {
+	// First some straightforward cases where the kind is just altogether wrong.
+	switch {
+	case want.IsListType() && !got.IsTupleType():
+		return want.FriendlyNameForConstraint() + " required"
+	case want.IsSetType() && !got.IsTupleType():
+		return want.FriendlyNameForConstraint() + " required"
+	case want.IsMapType() && !got.IsObjectType():
+		return want.FriendlyNameForConstraint() + " required"
+	}
+
+	// If the kinds are matched well enough then we'll move on to checking
+	// individual elements.
+	wantEty := want.ElementType()
+	switch {
+	case got.IsTupleType():
+		for i, gotEty := range got.TupleElementTypes() {
+			if gotEty.Equals(wantEty) {
+				continue // exact match, so no problem
+			}
+			if conv := getConversion(gotEty, wantEty, true); conv != nil {
+				continue // conversion is available, so no problem
+			}
+			return fmt.Sprintf("element %d: %s", i, MismatchMessage(gotEty, wantEty))
+		}
+
+		// If we get down here then something weird is going on but we'll
+		// return a reasonable fallback message anyway.
+		return fmt.Sprintf("all elements must be %s", wantEty.FriendlyNameForConstraint())
+
+	case got.IsObjectType():
+		for name, gotAty := range got.AttributeTypes() {
+			if gotAty.Equals(wantEty) {
+				continue // exact match, so no problem
+			}
+			if conv := getConversion(gotAty, wantEty, true); conv != nil {
+				continue // conversion is available, so no problem
+			}
+			return fmt.Sprintf("element %q: %s", name, MismatchMessage(gotAty, wantEty))
+		}
+
+		// If we get down here then something weird is going on but we'll
+		// return a reasonable fallback message anyway.
+		return fmt.Sprintf("all elements must be %s", wantEty.FriendlyNameForConstraint())
+
+	default:
+		// Should not be possible to get here since we only call this function
+		// with got as structural types, but...
+		return want.FriendlyNameForConstraint() + " required"
+	}
+}
+
+func mismatchMessageCollectionsFromCollections(got, want cty.Type) string {
+	// First some straightforward cases where the kind is just altogether wrong.
+	switch {
+	case want.IsListType() && !(got.IsListType() || got.IsSetType()):
+		return want.FriendlyNameForConstraint() + " required"
+	case want.IsSetType() && !(got.IsListType() || got.IsSetType()):
+		return want.FriendlyNameForConstraint() + " required"
+	case want.IsMapType() && !got.IsMapType():
+		return want.FriendlyNameForConstraint() + " required"
+	}
+
+	// If the kinds are matched well enough then we'll check the element types.
+	gotEty := got.ElementType()
+	wantEty := want.ElementType()
+	noun := "element type"
+	switch {
+	case want.IsListType():
+		noun = "list element type"
+	case want.IsSetType():
+		noun = "set element type"
+	case want.IsMapType():
+		noun = "map element type"
+	}
+	return fmt.Sprintf("incorrect %s: %s", noun, MismatchMessage(gotEty, wantEty))
 }
