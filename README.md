@@ -31,6 +31,19 @@ output "do-something2" {
 }
 ```
 
+Sops also supports encrypting the entire file when in other formats. Such files can also be used by specifying `input_type = "raw"`:
+
+```hcl
+data "sops_file" "some-file" {
+  source_file = "secret-data.txt"
+  input_type = "raw"
+}
+
+output "do-something" {
+  value = "${data.sops_file.some-file.raw}"
+}
+```
+
 ## Install
 
 ``` shell
