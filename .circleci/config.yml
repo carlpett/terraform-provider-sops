@@ -3,7 +3,7 @@ jobs:
   build:
     docker:
       - image: circleci/golang:1.10
-    working_directory: /go/src/github.com/carlpett/terraform-sops
+    working_directory: /go/src/github.com/carlpett/terraform-provider-sops
     steps:
       - checkout
       - run: gpg --import test/testing-key.pgp
@@ -13,7 +13,7 @@ jobs:
   release:
     docker:
       - image: circleci/golang:1.10
-    working_directory: /go/src/github.com/carlpett/terraform-sops
+    working_directory: /go/src/github.com/carlpett/terraform-provider-sops
     steps:
       - checkout
       - run: gpg --import test/testing-key.pgp
@@ -23,13 +23,13 @@ jobs:
           command: |
             curl -sL 'https://github.com/aktau/github-release/releases/download/v0.6.2/linux-amd64-github-release.tar.bz2' | \
               tar xjf - --strip-components 3 -C /go/bin
-      - run: github-release upload --user carlpett --repo terraform-sops --tag $CIRCLE_TAG --name terraform-provider-sops_$CIRCLE_TAG-linux-amd64 --file terraform-provider-sops
+      - run: github-release upload --user carlpett --repo terraform-provider-sops --tag $CIRCLE_TAG --name terraform-provider-sops_$CIRCLE_TAG-linux-amd64 --file terraform-provider-sops
       - run:
           name: Trigger Docker Hub automated build
           command: |
             curl -X POST -H "Content-Type: application/json" \
               --data "{\"source_type\": \"Tag\", \"source_name\": \"$CIRCLE_TAG\"}" \
-              https://registry.hub.docker.com/u/carlpett/terraform-sops/trigger/$DOCKER_HUB_TRIGGER_TOKEN/
+              https://registry.hub.docker.com/u/carlpett/terraform-provider-sops/trigger/$DOCKER_HUB_TRIGGER_TOKEN/
       - store_artifacts:
           path: terraform-provider-sops
 
