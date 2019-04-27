@@ -1,11 +1,13 @@
-# Content is hello: world
 hello: ENC[AES256_GCM,data:gzR9Gz4=,iv:cbMZU1nUyo5mFCW+Vel2UYbnbMA/0wKxsQzy/WVAYw8=,tag:tETDJMCJYo+4K4LwsSw4Dw==,type:str]
+integer: ENC[AES256_GCM,data:9w==,iv:8gMmdZTOgdGdHlXvipvz4qchxFWMwKg95Zzvh/I84G4=,tag:jxzxI0m7stEK+zr+yc0Wsg==,type:int]
+float: ENC[AES256_GCM,data:UtBf,iv:Z7hdgplz8QP9JyC/DX5WWiazdYjBvZTVolvyf9VNvyw=,tag:v8VujtMTcuM4GuZKGreVbA==,type:float]
+bool: ENC[AES256_GCM,data:xW/sRw==,iv:0vXeg5/SBUDo8dmHHpDTdxMwpoCdx+ERE7dq4UgqVsc=,tag:RweVRArPBVskGtnPBiQ0Yg==,type:bool]
 sops:
     kms: []
     gcp_kms: []
     azure_kv: []
-    lastmodified: '2019-01-23T12:24:04Z'
-    mac: ENC[AES256_GCM,data:o5djAPas9xAoEK1mrIcnPcY2isYZJDj7k0Hc6VaowFfNUyB7U3uHnHHYWuibhJAoFtr5Cq59oNC/f/O7RvppjrSG6jqxjDQhppqLZbFLi6s10evoGsRvS32OB2AUGG8UwiWf2qbFp1/9ZMtjdh6nVUeKd+pSX6foApPHeexYjfM=,iv:xqGdZzM4Khnz86oGDFAoLrK3axllUcROHaje2LMgIW8=,tag:vNDll77V9QpEZ2T/GvPnQw==,type:str]
+    lastmodified: '2019-04-26T18:43:59Z'
+    mac: ENC[AES256_GCM,data:UdHBCIrxfP+FjXwi0++Y1MUdAZ3hAa34OfG/w911zimF2YR+Mqv7PD15Osqa9GotQ5idzJEAzvz6pRVm7J388s0g2E53zBjCfLO/dcrkmVRdjTw2WYM17ewGM61HlNB9EKPe38B/eTH6PP1pTs5vjplEM/3FDblglKw8koUDdp0=,iv:LmRycuJjAoyGaY8qazR6G5CEuyD8JYCe3OO9UTek6kE=,tag:pfpB4HNE1qVmhO1QdZvVkQ==,type:str]
     pgp:
     -   created_at: '2019-01-23T10:01:20Z'
         enc: |-
