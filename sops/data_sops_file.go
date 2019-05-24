@@ -55,6 +55,8 @@ func dataSourceFileRead(d *schema.ResourceData, meta interface{}) error {
 			format = "json"
 		case ".yaml":
 			format = "yaml"
+		case ".yml":
+			format = "yaml"
 		default:
 			return fmt.Errorf("Don't know how to decode file with extension %s, set input_type to json, yaml or raw as appropriate", ext)
 		}
