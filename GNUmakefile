@@ -1,4 +1,4 @@
-VERSION = $(shell git describe --tags --match='v*' | sed 's/^v//')
+VERSION = $(shell git describe --tags --match='v*')
 
 CROSSBUILD_OS   = linux windows darwin
 CROSSBUILD_ARCH = 386 amd64
@@ -24,7 +24,7 @@ build:
 
 crossbuild: $(GOPATH)/bin/gox
 		@echo ">> cross-building"
-		@gox -arch="$(CROSSBUILD_ARCH)" -os="$(CROSSBUILD_OS)" -output="binaries/{{.OS}}_{{.Arch}}/terraform-provider-sops_v$(VERSION)"
+		@gox -arch="$(CROSSBUILD_ARCH)" -os="$(CROSSBUILD_OS)" -output="binaries/{{.OS}}_{{.Arch}}/terraform-provider-sops_$(VERSION)"
 
 $(GOPATH)/bin/gox:
 		# Need to disable modules for this to not pollute go.mod
@@ -34,8 +34,8 @@ release: crossbuild bin/github-release
 	@echo ">> uploading release ${VERSION}"
 	@mkdir -p releases
 	@set -e; for OSARCH in $(OSARCH_COMBOS); do \
-		zip -j releases/terraform-provider-sops_v$(VERSION)_$$OSARCH.zip binaries/$$OSARCH/terraform-provider-sops_* > /dev/null; \
-		./bin/github-release upload -t ${VERSION} -n terraform-provider-sops_v$(VERSION)_$$OSARCH.zip -f releases/terraform-provider-sops_v$(VERSION)_$$OSARCH.zip; \
+		zip -j releases/terraform-provider-sops_$(VERSION)_$$OSARCH.zip binaries/$$OSARCH/terraform-provider-sops_* > /dev/null; \
+		./bin/github-release upload -t ${VERSION} -n terraform-provider-sops_$(VERSION)_$$OSARCH.zip -f releases/terraform-provider-sops_$(VERSION)_$$OSARCH.zip; \
 	done
 
 bin/github-release:
