@@ -17,13 +17,7 @@ jobs:
     steps:
       - checkout
       - run: gpg --import test/testing-key.pgp
-      - run: make test build
-      - run:
-          name: Download github-release tool
-          command: |
-            curl -sL 'https://github.com/aktau/github-release/releases/download/v0.6.2/linux-amd64-github-release.tar.bz2' | \
-              tar xjf - --strip-components 3 -C /go/bin
-      - run: github-release upload --user carlpett --repo terraform-provider-sops --tag $CIRCLE_TAG --name terraform-provider-sops_$CIRCLE_TAG-linux-amd64 --file terraform-provider-sops
+      - run: make test crossbuild release
       - run:
           name: Trigger Docker Hub automated build
           command: |
@@ -31,7 +25,7 @@ jobs:
               --data "{\"source_type\": \"Tag\", \"source_name\": \"$CIRCLE_TAG\"}" \
               https://registry.hub.docker.com/u/carlpett/terraform-provider-sops/trigger/$DOCKER_HUB_TRIGGER_TOKEN/
       - store_artifacts:
-          path: terraform-provider-sops
+          path: binaries
 
 workflows:
   version: 2
