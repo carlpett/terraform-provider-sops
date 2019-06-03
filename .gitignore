@@ -1,0 +1,4 @@
+bin/
+binaries/
+releases/
+terraform-provider-sops

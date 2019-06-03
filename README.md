@@ -46,11 +46,9 @@ output "do-something" {
 
 ## Install
 
-``` shell
-go get github.com/carlpett/terraform-provider-sops
-mkdir -p ~/.terraform.d/plugins
-ln -s $GOPATH/bin/terraform-provider-sops $HOME/.terraform.d/plugins/terraform-provider-sops
-```
+Download the latest [release](https://github.com/carlpett/terraform-provider-sops/releases) for your environment and unpack it to the user plugin directory. The user plugins directory is in one of the following locations, depending on the host operating system:
+* Windows `%APPDATA%\terraform.d\plugins`
+* All other systems `~/.terraform.d/plugins`
 
 ## Development
 Building and testing is most easily performed with `make build` and `make test` respectively.
