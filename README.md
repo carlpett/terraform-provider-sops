@@ -6,16 +6,34 @@ A Terraform plugin for using files encrypted with [Mozilla sops](https://github.
 
 Encrypt a file using Sops: `sops demo-secret.enc.json`
 
-``` json
+```json
 {
   "password": "foo",
   "db": {"password": "bar"}
 }
 ```
 
-Usage in Terraform looks like this:
+Usage in Terraform (0.12 and later) looks like this:
 
-``` hcl
+```hcl
+provider "sops" {}
+
+data "sops_file" "demo-secret" {
+  source_file = "demo-secret.enc.json"
+}
+
+output "do-something" {
+  value = data.sops_file.demo-secret.data["password"]
+}
+
+output "do-something2" {
+  value = data.sops_file.demo-secret.data["db.password"]
+}
+```
+
+<details><summary><i>Expand for older, Terraform 0.11 and earlier, syntax</i></summary>
+
+```hcl
 provider "sops" {}
 
 data "sops_file" "demo-secret" {
@@ -30,6 +48,7 @@ output "do-something2" {
   value = "${data.sops_file.demo-secret.data.db.password}"
 }
 ```
+</details>
 
 Sops also supports encrypting the entire file when in other formats. Such files can also be used by specifying `input_type = "raw"`:
 
@@ -40,7 +59,7 @@ data "sops_file" "some-file" {
 }
 
 output "do-something" {
-  value = "${data.sops_file.some-file.raw}"
+  value = data.sops_file.some-file.raw
 }
 ```
 
