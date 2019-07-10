@@ -1,3 +1,4 @@
+export CGO_ENABLED = 0
 VERSION = $(shell git describe --tags --match='v*')
 
 CROSSBUILD_OS   = linux windows darwin
@@ -20,15 +21,15 @@ test:
 
 build:
 	@echo ">> building binaries"
-	@CGO_ENABLED=0 go build -o terraform-provider-sops
+	@go build -o terraform-provider-sops
 
 crossbuild: $(GOPATH)/bin/gox
-		@echo ">> cross-building"
-		@gox -arch="$(CROSSBUILD_ARCH)" -os="$(CROSSBUILD_OS)" -output="binaries/{{.OS}}_{{.Arch}}/terraform-provider-sops_$(VERSION)"
+	@echo ">> cross-building"
+	@gox -arch="$(CROSSBUILD_ARCH)" -os="$(CROSSBUILD_OS)" -output="binaries/{{.OS}}_{{.Arch}}/terraform-provider-sops_$(VERSION)"
 
 $(GOPATH)/bin/gox:
-		# Need to disable modules for this to not pollute go.mod
-		@GO111MODULE=off go get -u github.com/mitchellh/gox
+	# Need to disable modules for this to not pollute go.mod
+	@GO111MODULE=off go get -u github.com/mitchellh/gox
 
 release: crossbuild bin/github-release
 	@echo ">> uploading release ${VERSION}"
