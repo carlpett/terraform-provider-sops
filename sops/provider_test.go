@@ -5,15 +5,19 @@ import (
 
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
+	"github.com/terraform-providers/terraform-provider-local/local"
 )
 
 var testAccProviders map[string]terraform.ResourceProvider
 var testAccProvider *schema.Provider
+var testAccLocalProvider *schema.Provider
 
 func init() {
 	testAccProvider = Provider().(*schema.Provider)
+	testAccLocalProvider = local.Provider().(*schema.Provider)
 	testAccProviders = map[string]terraform.ResourceProvider{
-		"sops": testAccProvider,
+		"sops":  testAccProvider,
+		"local": testAccLocalProvider,
 	}
 }
 
