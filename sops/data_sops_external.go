@@ -43,5 +43,8 @@ func dataSourceExternalRead(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	format := d.Get("input_type").(string)
+	if err := validateInputType(format); err != nil {
+		return err
+	}
 	return readData(content, format, d)
 }

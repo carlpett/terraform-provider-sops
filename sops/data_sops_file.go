@@ -57,5 +57,9 @@ func dataSourceFileRead(d *schema.ResourceData, meta interface{}) error {
 		}
 	}
 
+	if err := validateInputType(format); err != nil {
+		return err
+	}
+
 	return readData(content, format, d)
 }
