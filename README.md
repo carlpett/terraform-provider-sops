@@ -12,7 +12,7 @@ Encrypt a file using Sops: `sops demo-secret.enc.json`
   "db": {"password": "bar"}
 }
 ```
-
+### sops_file
 Usage in Terraform (0.12 and later) looks like this:
 
 ```hcl
@@ -62,6 +62,55 @@ output "do-something" {
   value = data.sops_file.some-file.raw
 }
 ```
+
+### sops_external
+For use with reading files that might not be local. 
+
+> `input_type` is required with this data source.
+
+Terraform 0.12
+```hcl
+provider "sops" {}
+
+# using sops/test-fixtures/basic.yaml as an example
+data "local_file" "yaml" {
+  filename = "basic.yaml"
+}
+
+data "sops_external" "demo-secret" {
+  source     = data.local_file.yaml.content
+  input_type = "yaml"
+}
+
+output "do-something" {
+  value = data.sops_external.demo-secret.data.hello
+}
+```
+
+<details><summary><i>Expand for older, Terraform 0.11 and earlier, syntax</i></summary>
+
+> `input_type` is required with this data source.
+
+```hcl
+provider "sops" {}
+
+# using sops/test-fixtures/basic.yaml as an example
+data "local_file" "yaml" {
+  filename = "basic.yaml"
+}
+
+data "sops_external" "demo-secret" {
+  source     = "${data.local_file.yaml.content}"
+  input_type = "yaml"
+}
+
+output "do-something" {
+  value = "${data.sops_external.demo-secret.data.hello}"
+}
+```
+</details>
+
+
 
 ## Install
 
