@@ -17,20 +17,26 @@ type Store struct {
 }
 
 func (store *Store) LoadEncryptedFile(in []byte) (sops.Tree, error) {
-	branch, err := store.LoadPlainFile(in)
+	branches, err := store.LoadPlainFile(in)
 	if err != nil {
 		return sops.Tree{}, err
 	}
 
 	var resultBranch sops.TreeBranch
 	mdMap := make(map[string]interface{})
-	for _, item := range branch {
-		s := item.Key.(string)
-		if strings.HasPrefix(s, SopsPrefix) {
-			s = s[len(SopsPrefix):]
-			mdMap[s] = item.Value
-		} else {
+	for _, item := range branches[0] {
+		switch key := item.Key.(type) {
+		case string:
+			if strings.HasPrefix(key, SopsPrefix) {
+				key = key[len(SopsPrefix):]
+				mdMap[key] = item.Value
+			} else {
+				resultBranch = append(resultBranch, item)
+			}
+		case sops.Comment:
 			resultBranch = append(resultBranch, item)
+		default:
+			panic(fmt.Sprintf("Unexpected type: %T (value %#v)", key, key))
 		}
 	}
 
@@ -44,28 +50,40 @@ func (store *Store) LoadEncryptedFile(in []byte) (sops.Tree, error) {
 	}
 
 	return sops.Tree{
-		Branch:   resultBranch,
+		Branches: sops.TreeBranches{
+			resultBranch,
+		},
 		Metadata: internalMetadata,
 	}, nil
 }
 
-func (store *Store) LoadPlainFile(in []byte) (sops.TreeBranch, error) {
+func (store *Store) LoadPlainFile(in []byte) (sops.TreeBranches, error) {
+	var branches sops.TreeBranches
 	var branch sops.TreeBranch
 
 	for _, line := range bytes.Split(in, []byte("\n")) {
 		if len(line) == 0 {
 			continue
 		}
-		pos := bytes.Index(line, []byte("="))
-		if pos == -1 {
-			return nil, fmt.Errorf("invalid dotenv input line: %s", line)
+		if line[0] == '#' {
+			branch = append(branch, sops.TreeItem{
+				Key: sops.Comment{string(line[1:])},
+				Value: nil,
+			})
+		} else {
+			pos := bytes.Index(line, []byte("="))
+			if pos == -1 {
+				return nil, fmt.Errorf("invalid dotenv input line: %s", line)
+			}
+			branch = append(branch, sops.TreeItem{
+				Key:   string(line[:pos]),
+				Value: string(line[pos+1:]),
+			})
 		}
-		branch = append(branch, sops.TreeItem{
-			Key:   string(line[:pos]),
-			Value: string(line[pos+1:]),
-		})
 	}
-	return branch, nil
+
+	branches = append(branches, branch)
+	return branches, nil
 }
 
 func (store *Store) EmitEncryptedFile(in sops.Tree) ([]byte, error) {
@@ -78,18 +96,23 @@ func (store *Store) EmitEncryptedFile(in sops.Tree) ([]byte, error) {
 		if value == nil {
 			continue
 		}
-		in.Branch = append(in.Branch, sops.TreeItem{Key: SopsPrefix + key, Value: value})
+		in.Branches[0] = append(in.Branches[0], sops.TreeItem{Key: SopsPrefix + key, Value: value})
 	}
-	return store.EmitPlainFile(in.Branch)
+	return store.EmitPlainFile(in.Branches)
 }
 
-func (store *Store) EmitPlainFile(in sops.TreeBranch) ([]byte, error) {
+func (store *Store) EmitPlainFile(in sops.TreeBranches) ([]byte, error) {
 	buffer := bytes.Buffer{}
-	for _, item := range in {
+	for _, item := range in[0] {
 		if isComplexValue(item.Value) {
 			return nil, fmt.Errorf("cannot use complex value in dotenv file: %s", item.Value)
 		}
-		line := fmt.Sprintf("%s=%s\n", item.Key, item.Value)
+		var line string
+		if comment, ok := item.Key.(sops.Comment); ok {
+			line = fmt.Sprintf("#%s\n", comment.Value)
+		} else {
+			line = fmt.Sprintf("%s=%s\n", item.Key, item.Value)
+		}
 		buffer.WriteString(line)
 	}
 	return buffer.Bytes(), nil
@@ -100,6 +123,14 @@ func (Store) EmitValue(v interface{}) ([]byte, error) {
 		return []byte(s), nil
 	}
 	return nil, fmt.Errorf("the dotenv store only supports emitting strings, got %T", v)
+}
+
+func (store *Store) EmitExample() []byte {
+	bytes, err := store.EmitPlainFile(stores.ExampleFlatTree.Branches)
+	if err != nil {
+		panic(err)
+	}
+	return bytes
 }
 
 func metadataToMap(md stores.Metadata) (map[string]interface{}, error) {

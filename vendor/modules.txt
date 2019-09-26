@@ -277,7 +277,7 @@ github.com/zclconf/go-cty/cty/function/stdlib
 github.com/zclconf/go-cty-yaml
 # go.mozilla.org/gopgagent v0.0.0-20170926210634-4d7ea76ff71a
 go.mozilla.org/gopgagent
-# go.mozilla.org/sops v0.0.0-20181108154941-647d8ed41b61
+# go.mozilla.org/sops v0.0.0-20190611200209-e9e1e87723c8
 go.mozilla.org/sops/decrypt
 go.mozilla.org/sops
 go.mozilla.org/sops/aes
