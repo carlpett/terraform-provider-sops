@@ -1,6 +1,51 @@
 Changelog
 =========
 
+3.3.1
+-----
+
+Bug fixes:
+
+* Make sure the pgp key fingerprint is longer than 16 characters before
+  slicing it. (#463)
+* Allow for `--set` value to be a string. (#461)
+
+Project changes:
+
+* Using `develop` as a staging branch to create releases off of. What
+  is in `master` is now the current stable release.
+* Upgrade to using Go 1.12 to build sops
+* Updated all vendored packages
+
+3.3.0
+-----
+
+New features:
+
+* Multi-document support for YAML files
+* Support referencing AWS KMS keys by their alias
+* Support for INI files
+* Support for AWS CLI profiles
+* Comment support in .env files
+* Added vi to the list of known editors
+* Added a way to specify the GPG key server to use through the
+  SOPS_GPG_KEYSERVER environment variable
+
+Bug fixes:
+
+* Now uses $HOME instead of ~ (which didn't work) to find the GPG home
+* Fix panic when vim was not available as an editor, but other
+  alternative editors were
+* Fix issue with AWS KMS Encryption Contexts (#445) with more than one
+  context value failing to decrypt intermittently. Includes an
+  automatic fix for old files affected by this issue.
+
+Project infrastructure changes:
+
+* Added integration tests for AWS KMS
+* Added Code of Conduct
+
+
 3.2.0
 -----
 

@@ -18,6 +18,6 @@ require (
 	github.com/sirupsen/logrus v1.3.0 // indirect
 	github.com/terraform-providers/terraform-provider-local v1.3.0
 	go.mozilla.org/gopgagent v0.0.0-20170926210634-4d7ea76ff71a // indirect
-	go.mozilla.org/sops v0.0.0-20181108154941-647d8ed41b61
+	go.mozilla.org/sops v0.0.0-20190611200209-e9e1e87723c8
 	gopkg.in/yaml.v2 v2.2.2
 )

@@ -58,6 +58,10 @@ func gpgBinary() string {
 }
 
 func (key *MasterKey) encryptWithGPGBinary(dataKey []byte) error {
+	fingerprint := key.Fingerprint
+	if offset := len(fingerprint) - 16; offset > 0 {
+		fingerprint = fingerprint[offset:]
+	}
 	args := []string{
 		"--no-default-recipient",
 		"--yes",
@@ -66,7 +70,7 @@ func (key *MasterKey) encryptWithGPGBinary(dataKey []byte) error {
 		"-r",
 		key.Fingerprint,
 		"--trusted-key",
-		key.Fingerprint[len(key.Fingerprint)-16:],
+		fingerprint,
 		"--no-encrypt-to",
 	}
 	cmd := exec.Command(gpgBinary(), args...)
@@ -99,6 +103,14 @@ func getKeyFromKeyServer(keyserver string, fingerprint string) (openpgp.Entity, 
 	return *ents[0], nil
 }
 
+func gpgKeyServer() string {
+	keyServer := "gpg.mozilla.org"
+	if envKeyServer := os.Getenv("SOPS_GPG_KEYSERVER"); envKeyServer != "" {
+		keyServer = envKeyServer
+	}
+	return keyServer
+}
+
 func (key *MasterKey) getPubKey() (openpgp.Entity, error) {
 	ring, err := key.pubRing()
 	if err == nil {
@@ -108,7 +120,8 @@ func (key *MasterKey) getPubKey() (openpgp.Entity, error) {
 			return entity, nil
 		}
 	}
-	entity, err := getKeyFromKeyServer("gpg.mozilla.org", key.Fingerprint)
+	keyServer := gpgKeyServer()
+	entity, err := getKeyFromKeyServer(keyServer, key.Fingerprint)
 	if err != nil {
 		return openpgp.Entity{},
 			fmt.Errorf("key with fingerprint %s is not available "+
@@ -246,7 +259,7 @@ func (key *MasterKey) gpgHome() string {
 	if dir == "" {
 		usr, err := user.Current()
 		if err != nil {
-			return "~/.gnupg"
+			return path.Join(os.Getenv("HOME"), "/.gnupg")
 		}
 		return path.Join(usr.HomeDir, ".gnupg")
 	}

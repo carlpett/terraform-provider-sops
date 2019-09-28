@@ -27,7 +27,7 @@ type SopsFile struct {
 	// in the SOPS file by checking for nil. This way we can show the user a
 	// helpful error message indicating that the metadata wasn't found, instead
 	// of showing a cryptic parsing error
-	Metadata *Metadata `yaml:"sops" json:"sops"`
+	Metadata *Metadata `yaml:"sops" json:"sops" ini:"sops"`
 }
 
 // Metadata is stored in SOPS encrypted files, and it contains the information necessary to decrypt the file.
@@ -67,6 +67,7 @@ type kmskey struct {
 	Context          map[string]*string `yaml:"context,omitempty" json:"context,omitempty"`
 	CreatedAt        string             `yaml:"created_at" json:"created_at"`
 	EncryptedDataKey string             `yaml:"enc" json:"enc"`
+	AwsProfile       string             `yaml:"aws_profile" json:"aws_profile"`
 }
 
 type gcpkmskey struct {
@@ -135,6 +136,7 @@ func kmsKeysFromGroup(group sops.KeyGroup) (keys []kmskey) {
 				EncryptedDataKey: key.EncryptedKey,
 				Context:          key.EncryptionContext,
 				Role:             key.Role,
+				AwsProfile:       key.AwsProfile,
 			})
 		}
 	}
@@ -265,6 +267,7 @@ func (kmsKey *kmskey) toInternal() (*kms.MasterKey, error) {
 		EncryptedKey:      kmsKey.EncryptedDataKey,
 		CreationDate:      creationDate,
 		Arn:               kmsKey.Arn,
+		AwsProfile:        kmsKey.AwsProfile,
 	}, nil
 }
 
@@ -304,4 +307,81 @@ func (pgpKey *pgpkey) toInternal() (*pgp.MasterKey, error) {
 		CreationDate: creationDate,
 		Fingerprint:  pgpKey.Fingerprint,
 	}, nil
+}
+
+var ExampleComplexTree = sops.Tree{
+	Branches: sops.TreeBranches{
+		sops.TreeBranch{
+			sops.TreeItem{
+				Key:   "hello",
+				Value: `Welcome to SOPS! Edit this file as you please!`,
+			},
+			sops.TreeItem{
+				Key:   "example_key",
+				Value: "example_value",
+			},
+			sops.TreeItem{
+				Key:   sops.Comment{Value: " Example comment"},
+				Value: nil,
+			},
+			sops.TreeItem{
+				Key: "example_array",
+				Value: []interface{}{
+					"example_value1",
+					"example_value2",
+				},
+			},
+			sops.TreeItem{
+				Key:   "example_number",
+				Value: 1234.56789,
+			},
+			sops.TreeItem{
+				Key:   "example_booleans",
+				Value: []interface{}{true, false},
+			},
+		},
+	},
+}
+
+var ExampleSimpleTree = sops.Tree{
+	Branches: sops.TreeBranches{
+		sops.TreeBranch{
+			sops.TreeItem{
+				Key: "Welcome!",
+				Value: sops.TreeBranch{
+					sops.TreeItem{
+						Key:   sops.Comment{Value: " This is an example file."},
+						Value: nil,
+					},
+					sops.TreeItem{
+						Key:   "hello",
+						Value: "Welcome to SOPS! Edit this file as you please!",
+					},
+					sops.TreeItem{
+						Key:   "example_key",
+						Value: "example_value",
+					},
+				},
+			},
+		},
+	},
+}
+
+var ExampleFlatTree = sops.Tree{
+	Branches: sops.TreeBranches{
+		sops.TreeBranch{
+			sops.TreeItem{
+				Key:   sops.Comment{Value: " This is an example file."},
+				Value: nil,
+			},
+			sops.TreeItem{
+				Key:   "hello",
+				Value: "Welcome to SOPS! Edit this file as you please!",
+			},
+			sops.TreeItem{
+				Key:   "example_key",
+				Value: "example_value",
+			},
+		},
+	},
 }

@@ -1,7 +1,7 @@
 SOPS: Secrets OPerationS
 ========================
 
-**sops** is an editor of encrypted files that supports YAML, JSON and BINARY
+**sops** is an editor of encrypted files that supports YAML, JSON, ENV, INI and BINARY
 formats and encrypts with AWS KMS, GCP KMS, Azure Key Vault and PGP.
 (`demo <https://www.youtube.com/watch?v=YTEVyLXFiq0>`_)
 
@@ -24,13 +24,16 @@ Binaries and packages of the latest stable release are available at `https://git
 
 Development branch
 ~~~~~~~~~~~~~~~~~~
-For the adventurous, unstable features are available in the master branch, which you can install with:
+For the adventurous, unstable features are available in the `develop` branch, which you can install from source:
 
 .. code:: bash
 
 	$ go get -u go.mozilla.org/sops/cmd/sops
+        $ cd $GOPATH/src/go.mozilla.org/sops/
+        $ git checkout develop
+        $ make install
 
-(requires Go >= 1.8)
+(requires Go >= 1.12)
 
 If you don't have Go installed, set it up with:
 
@@ -45,7 +48,7 @@ Or whatever variation of the above fits your system and shell.
 
 To use **sops** as a library, take a look at the `decrypt package <https://godoc.org/go.mozilla.org/sops/decrypt>`_.
 
-**Questions?** ping "ulfr" in ``#security`` on `irc.mozilla.org <https://wiki.mozilla.org/IRC>`_
+**Questions?** ping "ulfr" and "autrilla" in ``#security`` on `irc.mozilla.org <https://wiki.mozilla.org/IRC>`_
 (use a web client like `mibbit <https://chat.mibbit.com>`_ ).
 
 **What happened to Python Sops?** We rewrote Sops in Go to solve a number of
@@ -59,6 +62,11 @@ but we strongly recommend you use the Go version instead.
 Usage
 -----
 
+For a quick presentation of Sops, check out this Youtube tutorial:
+
+.. image:: https://img.youtube.com/vi/V2PRhxphH2w/0.jpg
+   :target: https://www.youtube.com/watch?v=V2PRhxphH2w
+   
 If you're using AWS KMS, create one or multiple master keys in the IAM console
 and export them, comma separated, in the **SOPS_KMS_ARN** env variable. It is
 recommended to use at least two master keys in different regions.
@@ -210,7 +218,7 @@ And decrypt it using::
 	 $ sops --decrypt test.enc.yaml
 
 Encrypting using Azure Key Vault
-~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 The Azure Key Vault integration uses service principals to access secrets in
 the vault. The following environment variables are used to authenticate:
 
@@ -326,6 +334,23 @@ When removing keys, it is recommended to rotate the data key using ``-r``,
 otherwise owners of the removed key may have add access to the data key in the
 past.
 
+KMS AWS Profiles
+~~~~~~~~~~~~~~~~
+
+If you want to use a specific profile, you can do so with `aws_profile`:
+
+.. code:: yaml
+
+	sops:
+	    kms:
+	    -	arn: arn:aws:kms:us-east-1:656532927350:key/920aff2e-c5f1-4040-943a-047fa387b27e
+	        aws_profile: foo
+
+If no AWS profile is set, default credentials will be used.
+
+Similarly the `--aws-profile` flag can be set with the command line with any of the KMS commands.
+
+
 Assuming roles and using KMS in various AWS accounts
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -392,9 +417,6 @@ to refine the access control of a given KMS master key.
 When creating a new file, you can specify encryption context in the
 ``--encryption-context`` flag by comma separated list of key-value pairs:
 
-When creating a new file, you can specify encryption context in the
-``--encryption-context`` flag by comma separated list of key-value pairs:
-
 .. code:: bash
 
 	$ sops --encryption-context Environment:production,Role:web-server test.dev.yaml
@@ -449,7 +471,7 @@ Let's take an example:
 * file named **something.dev.yaml** should use one set of KMS A
 * file named **something.prod.yaml** should use another set of KMS B
 * other files use a third set of KMS C
-* all live under **mysecretrepo/something.{dev,prod}.yaml**
+* all live under **mysecretrepo/something.{dev,prod,gcp}.yaml**
 
 Under those circumstances, a file placed at **mysecretrepo/.sops.yaml**
 can manage the three sets of configurations for the three types of files:
@@ -483,7 +505,33 @@ When creating any file under **mysecretrepo**, whether at the root or under
 a subdirectory, sops will recursively look for a ``.sops.yaml`` file. If one is
 found, the filename of the file being created is compared with the filename
 regexes of the configuration file. The first regex that matches is selected,
-and its KMS and PGP keys are used to encrypt the file.
+and its KMS and PGP keys are used to encrypt the file. It should be noted that
+the looking up of ``.sops.yaml`` is from the working directory (CWD) instead of
+the directory of the encrypting file (see `Issue 242 <https://github.com/mozilla/sops/issues/242>`_).
+
+The path_regex checks the full path of the encrypting file. Here is another example:
+
+* files located under directory **development** should use one set of KMS A
+* files located under directory **production** should use another set of KMS B
+* other files use a third set of KMS C
+
+.. code:: yaml
+
+    creation_rules:
+        # upon creation of a file under development,
+        # KMS set A is used
+        - path_regex: .*/development/.*
+          kms: 'arn:aws:kms:us-west-2:927034868273:key/fe86dd69-4132-404c-ab86-4269956b4500,arn:aws:kms:us-west-2:361527076523:key/5052f06a-5d3f-489e-b86c-57201e06f31e+arn:aws:iam::361527076523:role/hiera-sops-prod'
+          pgp: '1022470DE3F0BC54BC6AB62DE05550BC07FB1A0A'
+
+        # prod files use KMS set B in the PROD IAM
+        - path_regex: .*/production/.*
+          kms: 'arn:aws:kms:us-west-2:361527076523:key/5052f06a-5d3f-489e-b86c-57201e06f31e+arn:aws:iam::361527076523:role/hiera-sops-prod,arn:aws:kms:eu-central-1:361527076523:key/cb1fab90-8d17-42a1-a9d8-334968904f94+arn:aws:iam::361527076523:role/hiera-sops-prod'
+          pgp: '1022470DE3F0BC54BC6AB62DE05550BC07FB1A0A'
+
+        # other files use KMS set C
+        - kms: 'arn:aws:kms:us-west-2:927034868273:key/fe86dd69-4132-404c-ab86-4269956b4500,arn:aws:kms:us-west-2:142069644989:key/846cfb17-373d-49b9-8baf-f36b04512e47,arn:aws:kms:us-west-2:361527076523:key/5052f06a-5d3f-489e-b86c-57201e06f31e'
+          pgp: '1022470DE3F0BC54BC6AB62DE05550BC07FB1A0A'
 
 Creating a new file with the right keys is now as simple as
 
@@ -506,6 +554,22 @@ Example: place the following in your ``~/.bashrc``
 .. code:: bash
 
 	SOPS_GPG_EXEC = 'your_gpg_client_wrapper'
+
+
+Specify a different GPG key server
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+By default, ``sops`` uses the key server ``gpg.mozilla.org`` to retrieve the GPG
+keys that are not present in the local keyring.
+To use a different GPG key server, set the ``SOPS_GPG_KEYSERVER`` environment
+variable.
+
+Example: place the following in your ``~/.bashrc``
+
+.. code:: bash
+
+	SOPS_GPG_KEYSERVER = 'gpg.example.com'
+
 
 Key groups
 ~~~~~~~~~~
@@ -734,7 +798,7 @@ YAML and JSON type extensions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ``sops`` uses the file extension to decide which encryption method to use on the file
-content. ``YAML`` and ``JSON`` files are treated as trees of data, and key/values are
+content. ``YAML``, ``JSON``, ``ENV``, and ``INI`` files are treated as trees of data, and key/values are
 extracted from the files to only encrypt the leaf values. The tree structure is also
 used to check the integrity of the file.
 
@@ -783,8 +847,9 @@ JSON and TEXT file types do not support anchors and thus have no such limitation
 YAML Streams
 ~~~~~~~~~~~~
 
-``YAML`` supports having more than one document in a single file. ``sops`` does not. For this
-reason, the following file won't work in ``sops``:
+``YAML`` supports having more than one "document" in a single file, while
+formats like ``JSON`` do not. ``sops`` is able to handle both. This means the
+following multi-document will be encrypted as expected:
 
 .. code:: yaml
 
@@ -793,9 +858,8 @@ reason, the following file won't work in ``sops``:
 	---
 	data: bar
 
-If you try to encrypt this file with ``sops``, it will ignore all documents except the first,
-effectively deleting them. ``sops`` does not support multi-document files, and until our YAML
-parser does, it is unlikely it will.
+Note that the ``sops`` metadata, i.e. the hash, etc, is computed for the physical
+file rather than each internal "document".
 
 Top-level arrays
 ~~~~~~~~~~~~~~~~
@@ -992,6 +1056,10 @@ You can import sops as a module and use it in your python program.
 	sops_key, tree = sops.get_key(tree)
 	tree = sops.walk_and_decrypt(tree, sops_key)
 	sops.write_file(tree, path=path, filetype=pathtype)
+
+Note: this uses the previous implemenation of `sops` written in python, 
+and so doesn't support newer features such as GCP-KMS. 
+To use the current version, call out to `sops` using `subprocess.check_output`
 
 Showing diffs in cleartext in git
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1296,28 +1364,18 @@ Mozilla Public License Version 2.0
 Authors
 -------
 
-By commit count:
+The core team is composed of:
 
-* Julien Vehent
-* Adrian Utrilla
-* Jeremiah Orem
-* Rémy HUBSCHER
-* Daniel Thorn
-* Dick Tang
-* Alexis Métaireau
-* Brian Hourigan
-* Todd Wolfson
-* Chris Kolosiwsky
-* Boris Kourtoukov
-* Elliot Murphy
-* Ivan Malopinsky
-* Jonathan Barratt
+* Adrian Utrilla @autrilla
+* Julien Vehent @jvehent
+* AJ Banhken @ajvb
 
+And a whole bunch of `contributors <https://github.com/mozilla/sops/graphs/contributors>`_
 
 Credits
 -------
 
-`sops` is inspired by `hiera-eyaml <https://github.com/TomPoulton/hiera-eyaml>`_,
+`sops` was inspired by `hiera-eyaml <https://github.com/TomPoulton/hiera-eyaml>`_,
 `credstash <https://github.com/LuminalOSS/credstash>`_ ,
 `sneaker <https://github.com/codahale/sneaker>`_,
 `password store <http://www.passwordstore.org/>`_ and too many years managing
