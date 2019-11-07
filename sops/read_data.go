@@ -2,7 +2,6 @@ package sops
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/hashicorp/terraform/helper/schema"
 	"go.mozilla.org/sops/decrypt"
@@ -29,8 +28,6 @@ func readData(content []byte, format string, d *schema.ResourceData) error {
 			err = json.Unmarshal(cleartext, &data)
 		case "yaml":
 			err = yaml.Unmarshal(cleartext, &data)
-		default:
-			return fmt.Errorf("Don't know how to unmarshal format %s", format)
 	}
 	if err != nil {
 		return err
