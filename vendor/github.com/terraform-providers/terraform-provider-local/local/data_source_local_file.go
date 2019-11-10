@@ -6,7 +6,7 @@ import (
 	"encoding/hex"
 	"io/ioutil"
 
-	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
 func dataSourceLocalFile() *schema.Resource {

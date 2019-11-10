@@ -7,8 +7,9 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"strconv"
 
-	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
 func resourceLocalFile() *schema.Resource {
@@ -42,6 +43,22 @@ func resourceLocalFile() *schema.Resource {
 				Description: "Path to the output file",
 				Required:    true,
 				ForceNew:    true,
+			},
+			"file_permission": {
+				Type:         schema.TypeString,
+				Description:  "Permissions to set for the output file",
+				Optional:     true,
+				ForceNew:     true,
+				Default:      "0777",
+				ValidateFunc: validateMode,
+			},
+			"directory_permission": {
+				Type:         schema.TypeString,
+				Description:  "Permissions to set for directories created",
+				Optional:     true,
+				ForceNew:     true,
+				Default:      "0777",
+				ValidateFunc: validateMode,
 			},
 		},
 	}
@@ -94,12 +111,18 @@ func resourceLocalFileCreate(d *schema.ResourceData, _ interface{}) error {
 
 	destinationDir := path.Dir(destination)
 	if _, err := os.Stat(destinationDir); err != nil {
-		if err := os.MkdirAll(destinationDir, 0777); err != nil {
+		dirPerm := d.Get("directory_permission").(string)
+		dirMode, _ := strconv.ParseInt(dirPerm, 8, 64)
+		if err := os.MkdirAll(destinationDir, os.FileMode(dirMode)); err != nil {
 			return err
 		}
 	}
 
-	if err := ioutil.WriteFile(destination, []byte(content), 0777); err != nil {
+	filePerm := d.Get("file_permission").(string)
+
+	fileMode, _ := strconv.ParseInt(filePerm, 8, 64)
+
+	if err := ioutil.WriteFile(destination, []byte(content), os.FileMode(fileMode)); err != nil {
 		return err
 	}
 
