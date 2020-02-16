@@ -1,5 +1,5 @@
 export CGO_ENABLED = 0
-VERSION = $(shell git describe --tags --match='v*')
+VERSION = $(shell git describe --tags --match='v*' --always)
 
 CROSSBUILD_OS   = linux windows darwin
 CROSSBUILD_ARCH = 386 amd64
@@ -31,16 +31,17 @@ $(GOPATH)/bin/gox:
 	# Need to disable modules for this to not pollute go.mod
 	@GO111MODULE=off go get -u github.com/mitchellh/gox
 
-release: crossbuild bin/github-release
+release: crossbuild bin/hub
 	@echo ">> uploading release ${VERSION}"
 	@mkdir -p releases
 	@set -e; for OSARCH in $(OSARCH_COMBOS); do \
 		zip -j releases/terraform-provider-sops_$(VERSION)_$$OSARCH.zip binaries/$$OSARCH/terraform-provider-sops_* > /dev/null; \
-		./bin/github-release upload -t ${VERSION} -n terraform-provider-sops_$(VERSION)_$$OSARCH.zip -f releases/terraform-provider-sops_$(VERSION)_$$OSARCH.zip; \
+		./bin/hub release edit -a "releases/terraform-provider-sops_$(VERSION)_$$OSARCH.zip#terraform-provider-sops_$(VERSION)_$$OSARCH.zip" ${VERSION}; \
 	done
 
-bin/github-release:
+bin/hub:
 	@mkdir -p bin
-	@curl -sL 'https://github.com/aktau/github-release/releases/download/v0.6.2/linux-amd64-github-release.tar.bz2' | tar xjf - --strip-components 3 -C bin
+	@curl -sL 'https://github.com/github/hub/releases/download/v2.14.1/hub-linux-amd64-2.14.1.tgz' | \
+		tar -xzf - --strip-components 2 -C bin --wildcards '*/bin/hub'
 
 .PHONY: all style vet test build crossbuild release
