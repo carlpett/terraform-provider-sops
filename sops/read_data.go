@@ -2,7 +2,6 @@ package sops
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"go.mozilla.org/sops/decrypt"
@@ -16,30 +15,29 @@ func readData(content []byte, format string, d *schema.ResourceData) error {
 		return err
 	}
 
-	if format != "raw" {
-		var data map[string]interface{}
-		switch format {
+	// Set output attribute for raw content
+	err = d.Set("raw", string(cleartext))
+	if err != nil {
+		return err
+	}
+
+	// Set output attribute for content as a map (only for json and yaml)
+	var data map[string]interface{}
+	switch format {
 		case "json":
 			err = json.Unmarshal(cleartext, &data)
 		case "yaml":
 			err = yaml.Unmarshal(cleartext, &data)
-		default:
-			return fmt.Errorf("Don't know how to unmarshal format %s", format)
-		}
-		if err != nil {
-			return err
-		}
-
-		err = d.Set("data", flatten(data))
-		if err != nil {
-			return err
-		}
-	} else {
-		err = d.Set("raw", string(cleartext))
-		if err != nil {
-			return err
-		}
 	}
+	if err != nil {
+		return err
+	}
+
+	err = d.Set("data", flatten(data))
+	if err != nil {
+		return err
+	}
+
 
 	d.SetId("-")
 	return nil
