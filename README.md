@@ -128,6 +128,7 @@ Apple macOS Catalina (10.15.0) and later prevents unsigned code from running. Wh
 
 To allow the plugin to run, go to the **Security & Privacy** tab of System Preferences and you should see a message saying
 > “terraform-provider-sops_v0.5.0” was blocked from use because it is not from an identified developer.
+
 Click the `Allow Anyway` button.
 
 ## Development
