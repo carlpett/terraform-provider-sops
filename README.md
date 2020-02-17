@@ -120,6 +120,16 @@ Download the latest [release](https://github.com/carlpett/terraform-provider-sop
 * Windows `%APPDATA%\terraform.d\plugins`
 * All other systems `~/.terraform.d/plugins`
 
+### Allowing code to run on macOS
+
+Apple macOS Catalina (10.15.0) and later prevents unsigned code from running. When you first run `terraform plan` it will pop up a message saying
+> **“terraform-provider-sops_v0.5.0” cannot be opened because the developer cannot be verified.**
+> macOS cannot verify that this app is free from malware.
+
+To allow the plugin to run, go to the **Security & Privacy** tab of System Preferences and you should see a message saying
+> “terraform-provider-sops_v0.5.0” was blocked from use because it is not from an identified developer.
+Click the `Allow Anyway` button.
+
 ## Development
 Building and testing is most easily performed with `make build` and `make test` respectively.
 
