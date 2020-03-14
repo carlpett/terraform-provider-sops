@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"go.mozilla.org/sops/decrypt"
+	"go.mozilla.org/sops/v3/decrypt"
 	"gopkg.in/yaml.v2"
 )
 
@@ -24,10 +24,10 @@ func readData(content []byte, format string, d *schema.ResourceData) error {
 	// Set output attribute for content as a map (only for json and yaml)
 	var data map[string]interface{}
 	switch format {
-		case "json":
-			err = json.Unmarshal(cleartext, &data)
-		case "yaml":
-			err = yaml.Unmarshal(cleartext, &data)
+	case "json":
+		err = json.Unmarshal(cleartext, &data)
+	case "yaml":
+		err = yaml.Unmarshal(cleartext, &data)
 	}
 	if err != nil {
 		return err
@@ -37,7 +37,6 @@ func readData(content []byte, format string, d *schema.ResourceData) error {
 	if err != nil {
 		return err
 	}
-
 
 	d.SetId("-")
 	return nil

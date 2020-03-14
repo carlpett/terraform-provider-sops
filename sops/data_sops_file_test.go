@@ -163,3 +163,28 @@ func TestDataSourceSopsFile_json(t *testing.T) {
 		},
 	})
 }
+
+const configTestDataSourceSopsFile_partial = `
+data "sops_file" "partial" {
+  source_file = "%s/test-fixtures/partial.yaml"
+}`
+
+func TestDataSourceSopsFile_partial(t *testing.T) {
+	wd, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	config := fmt.Sprintf(configTestDataSourceSopsFile_partial, wd)
+	resource.UnitTest(t, resource.TestCase{
+		Providers: testAccProviders,
+		Steps: []resource.TestStep{
+			{
+				Config: config,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("data.sops_file.partial", "data.cleartext.hello", "world"), // Check that non-encrypted data is readable
+					resource.TestCheckResourceAttr("data.sops_file.partial", "data.encrypted.list.0.foo", "bar"),
+				),
+			},
+		},
+	})
+}
