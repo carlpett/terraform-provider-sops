@@ -24,12 +24,19 @@ data "sops_file" "demo-secret" {
   source_file = "demo-secret.enc.json"
 }
 
-output "do-something" {
+output "root-value-password" {
+  # Access the password variable from the map
   value = data.sops_file.demo-secret.data["password"]
 }
 
-output "do-something2" {
+output "mapped-nested-value" {
+  # Access the password variable that is under db via the terraform map of data
   value = data.sops_file.demo-secret.data["db.password"]
+}
+
+output "nested-json-value" {
+  # Access the password variable that is under db via the terraform object
+  value = jsondecode(data.sops_file.demo-secret.raw).db.password
 }
 ```
 
@@ -84,8 +91,13 @@ data "sops_external" "demo-secret" {
   input_type = "yaml"
 }
 
-output "do-something" {
+output "root-value-hello" {
   value = data.sops_external.demo-secret.data.hello
+}
+
+output "nested-yaml-value" {
+  # Access the password variable that is under db via the terraform object
+  value = yamldecode(data.sops_file.demo-secret.raw).db.password
 }
 ```
 
