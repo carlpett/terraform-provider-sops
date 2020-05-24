@@ -28,7 +28,7 @@ build:
 crossbuild: $(GOPATH)/bin/gox
 	@echo ">> cross-building"
 	gox -arch="$(CROSSBUILD_ARCH)" -os="$(CROSSBUILD_OS)" -osarch="$(addprefix !,$(subst _,/,$(SKIP_OSARCH)))" \
-		-output="binaries/$(RELEASE)/{{.OS}}_{{.Arch}}/terraform-provider-sops_$(RELEASE)"
+		-output="binaries/$(VERSION)/{{.OS}}_{{.Arch}}/terraform-provider-sops_$(VERSION)"
 
 $(GOPATH)/bin/gox:
 	# Need to disable modules for this to not pollute go.mod
@@ -38,7 +38,7 @@ release: crossbuild bin/hub
 	@echo ">> uploading release $(VERSION)"
 	mkdir -p releases
 	set -e; for OSARCH in $(OSARCH_COMBOS); do \
-		zip -j releases/terraform-provider-sops_$(RELEASE)_$$OSARCH.zip binaries/$(RELEASE)/$$OSARCH/terraform-provider-sops_* > /dev/null; \
+		zip -j releases/terraform-provider-sops_$(RELEASE)_$$OSARCH.zip binaries/$(VERSION)/$$OSARCH/terraform-provider-sops_* > /dev/null; \
 		./bin/hub release edit -m "" -a "releases/terraform-provider-sops_$(RELEASE)_$$OSARCH.zip#terraform-provider-sops_$(RELEASE)_$$OSARCH.zip" $(VERSION); \
 	done
 	@echo ">>> generating sha256sums:"
