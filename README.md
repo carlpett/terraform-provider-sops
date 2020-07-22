@@ -126,3 +126,27 @@ terraform state replace-provider registry.terraform.io/-/sops registry.terraform
 Building and testing is most easily performed with `make build` and `make test` respectively.
 
 The PGP key used for encrypting the test cases is found in `test/testing-key.pgp`. You can import it with `gpg --import test/testing-key.pgp`.
+
+## Transition to Terraform 0.13 (0.12.20+) provider required blocks.
+
+With terraform 0.13 (0.12.20+), providers are available/downloaded via the [terraform registry](https://registry.terraform.io/providers/carlpett/sops/latest) via a required_providers block (Yay!)
+
+```
+    sops = {
+      source = "carlpett/sops"
+      version = "0.5.1"
+    }
+```
+A prerequisite when converting is that you must from remove the data source block from the previous SOP provider in your `terraform.state` file. 
+
+If not you will be greeted with: 
+
+```
+- Finding latest version of -/sops...
+
+Error: Failed to query available provider packages
+
+Could not retrieve the list of available versions for provider -/sops:
+provider registry registry.terraform.io does not have a provider named
+registry.terraform.io/-/sops
+```
