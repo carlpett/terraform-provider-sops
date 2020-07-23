@@ -127,15 +127,20 @@ Building and testing is most easily performed with `make build` and `make test` 
 
 The PGP key used for encrypting the test cases is found in `test/testing-key.pgp`. You can import it with `gpg --import test/testing-key.pgp`.
 
-## Transition to Terraform 0.13 (0.12.20+) provider required blocks.
+## Transitioning to Terraform 0.13 (0.12.20+) provider required blocks.
 
-With terraform 0.13 (0.12.20+), providers are available/downloaded via the [terraform registry](https://registry.terraform.io/providers/carlpett/sops/latest) via a required_providers block (Yay!)
+With Terraform 0.13 (0.12.20+), providers are available/downloaded via the [terraform registry](https://registry.terraform.io/providers/carlpett/sops/latest) via a required_providers block (Yay!)
 
 ```
+terraform {
+  required_version = ">= 0.13.0"
+  required_providers {
     sops = {
       source = "carlpett/sops"
       version = "0.5.1"
     }
+  }
+}
 ```
 A prerequisite when converting is that you must from remove the data source block from the previous SOP provider in your `terraform.state` file. 
 
