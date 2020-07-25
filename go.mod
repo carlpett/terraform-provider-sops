@@ -8,8 +8,6 @@ require (
 	github.com/Azure/azure-sdk-for-go v36.1.0+incompatible // indirect
 	github.com/Azure/go-autorest/autorest/adal v0.8.1-0.20191028180845-3492b2aff503 // indirect
 	github.com/Azure/go-autorest/autorest/azure/auth v0.4.0 // indirect
-	github.com/Azure/go-autorest/autorest/to v0.3.0 // indirect
-	github.com/Azure/go-autorest/autorest/validation v0.2.0 // indirect
 	github.com/aws/aws-sdk-go v1.25.31 // indirect
 	github.com/golang/groupcache v0.0.0-20191027212112-611e8accdfc9 // indirect
 	github.com/hashicorp/go-hclog v0.10.0 // indirect
@@ -20,12 +18,11 @@ require (
 	github.com/howeyc/gopass v0.0.0-20190910152052-7cb4b85ec19c // indirect
 	github.com/jstemmer/go-junit-report v0.9.1 // indirect
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
-	github.com/mozilla-services/yaml v0.0.0-20191106225358-5c216288813c // indirect
 	github.com/posener/complete v1.2.2 // indirect
 	github.com/terraform-providers/terraform-provider-local v1.4.0
 	github.com/ulikunitz/xz v0.5.6 // indirect
 	github.com/vmihailenco/msgpack v4.0.4+incompatible // indirect
-	go.mozilla.org/sops v0.0.0-20190912205235-14a22d7a7060
+	go.mozilla.org/sops/v3 v3.6.0
 	go.opencensus.io v0.22.2 // indirect
 	golang.org/x/crypto v0.0.0-20191108234033-bd318be0434a // indirect
 	golang.org/x/net v0.0.0-20191109021931-daa7c04131f5 // indirect
