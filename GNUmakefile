@@ -23,12 +23,12 @@ test:
 
 build:
 	@echo ">> building binaries"
-	go build -o terraform-provider-sops
+	go build -mod=vendor -o terraform-provider-sops
 
 crossbuild: $(GOPATH)/bin/gox
 	@echo ">> cross-building"
 	gox -arch="$(CROSSBUILD_ARCH)" -os="$(CROSSBUILD_OS)" -osarch="$(addprefix !,$(subst _,/,$(SKIP_OSARCH)))" \
-		-output="binaries/$(VERSION)/{{.OS}}_{{.Arch}}/terraform-provider-sops_$(VERSION)"
+		-mod=vendor -output="binaries/$(VERSION)/{{.OS}}_{{.Arch}}/terraform-provider-sops_$(VERSION)"
 
 $(GOPATH)/bin/gox:
 	# Need to disable modules for this to not pollute go.mod
