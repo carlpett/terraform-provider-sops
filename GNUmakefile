@@ -1,6 +1,7 @@
 export CGO_ENABLED = 0
 VERSION = $(shell git describe --tags --match='v*' --always)
 RELEASE = $(patsubst v%,%,$(VERSION))# Remove leading v to comply with Terraform Registry conventions
+SIGNING_KEY = $(shell git config --get user.signingkey)
 
 CROSSBUILD_OS   = linux windows darwin
 CROSSBUILD_ARCH = 386 amd64
@@ -45,9 +46,14 @@ release: crossbuild bin/hub
 	cd releases; sha256sum *.zip | tee terraform-provider-sops_$(RELEASE)_SHA256SUMS
 	./bin/hub release edit -m "" -a "releases/terraform-provider-sops_$(RELEASE)_SHA256SUMS#terraform-provider-sops_$(RELEASE)_SHA256SUMS" $(VERSION)
 
+sign:
+	@echo ">>> signing:"
+	gpg --yes --default-key $(SIGNING_KEY) --detach-sign "releases/terraform-provider-sops_$(RELEASE)_SHA256SUMS"
+	hub release edit -m "" -a "releases/terraform-provider-sops_$(RELEASE)_SHA256SUMS.sig#terraform-provider-sops_$(RELEASE)_SHA256SUMS.sig" $(VERSION)
+
 bin/hub:
 	@mkdir -p bin
 	curl -sL 'https://github.com/github/hub/releases/download/v2.14.1/hub-linux-amd64-2.14.1.tgz' | \
 		tar -xzf - --strip-components 2 -C bin --wildcards '*/bin/hub'
 
-.PHONY: all style vet test build crossbuild release
+.PHONY: all style vet test build crossbuild release sign
