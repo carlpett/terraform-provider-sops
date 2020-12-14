@@ -27,10 +27,12 @@ func dataSourceFile() *schema.Resource {
 			"data": &schema.Schema{
 				Type:     schema.TypeMap,
 				Computed: true,
+				Sensitive: true,
 			},
 			"raw": &schema.Schema{
 				Type:     schema.TypeString,
 				Computed: true,
+				Sensitive: true,
 			},
 		},
 	}
