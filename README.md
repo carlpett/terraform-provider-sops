@@ -115,13 +115,6 @@ terraform {
 }
 ```
 
-## Migrating state from older Terraform versions
-To migrate a state from Terraform 0.12 or older, there is a need to change how the provider is referenced. After adding the `required_providers` block as shown above, Terraform provides a command to do the migration:
-
-```shell
-terraform state replace-provider registry.terraform.io/-/sops registry.terraform.io/carlpett/sops
-```
-
 ## Development
 Building and testing is most easily performed with `make build` and `make test` respectively.
 
@@ -129,26 +122,27 @@ The PGP key used for encrypting the test cases is found in `test/testing-key.pgp
 
 ## Transitioning to Terraform 0.13 provider required blocks.
 
-With Terraform 0.13, providers are available/downloaded via the [terraform registry](https://registry.terraform.io/providers/carlpett/sops/latest) via a required_providers block (Yay!)
+With Terraform 0.13, providers are available/downloaded via the [terraform registry](https://registry.terraform.io/providers/carlpett/sops/latest) via a required_providers block.
 
-```
+```hcl
 terraform {
-  required_version = ">= 0.13.0"
   required_providers {
     sops = {
       source = "carlpett/sops"
-      version = "0.5.1"
+      version = "~> 0.5"
     }
   }
 }
 ```
+
 A prerequisite when converting is that you must remove the data source block from the previous SOPS provider in your `terraform.state` file. 
 This can be done via:
-```
+```shell
 terraform state replace-provider registry.terraform.io/-/sops registry.terraform.io/carlpett/sops
 ```
+
 If not you will be greeted with: 
-```
+```shell
 - Finding latest version of -/sops...
 
 Error: Failed to query available provider packages
