@@ -6,6 +6,8 @@ A Terraform plugin for using files encrypted with [Mozilla sops](https://github.
 
 ## Example
 
+**NOTE:** All examples assume Terraform 0.13 or newer. For information about usage on older versions, see the [legacy usage docs](docs/legacy_usage.md).
+
 Encrypt a file using Sops: `sops demo-secret.enc.json`
 
 ```json
@@ -15,9 +17,17 @@ Encrypt a file using Sops: `sops demo-secret.enc.json`
 }
 ```
 ### sops_file
-Usage in Terraform (0.12 and later) looks like this:
 
 ```hcl
+terraform {
+  required_providers {
+    sops = {
+      source = "carlpett/sops"
+      version = "~> 0.5"
+    }
+  }
+}
+
 provider "sops" {}
 
 data "sops_file" "demo-secret" {
@@ -40,25 +50,6 @@ output "nested-json-value" {
 }
 ```
 
-<details><summary><i>Expand for older, Terraform 0.11 and earlier, syntax</i></summary>
-
-```hcl
-provider "sops" {}
-
-data "sops_file" "demo-secret" {
-  source_file = "demo-secret.enc.json"
-}
-
-output "do-something" {
-  value = "${data.sops_file.demo-secret.data.password}"
-}
-
-output "do-something2" {
-  value = "${data.sops_file.demo-secret.data.db.password}"
-}
-```
-</details>
-
 Sops also supports encrypting the entire file when in other formats. Such files can also be used by specifying `input_type = "raw"`:
 
 ```hcl
@@ -77,8 +68,16 @@ For use with reading files that might not be local.
 
 > `input_type` is required with this data source.
 
-Terraform 0.12
 ```hcl
+terraform {
+  required_providers {
+    sops = {
+      source = "carlpett/sops"
+      version = "~> 0.5"
+    }
+  }
+}
+
 provider "sops" {}
 
 # using sops/test-fixtures/basic.yaml as an example
@@ -101,47 +100,27 @@ output "nested-yaml-value" {
 }
 ```
 
-<details><summary><i>Expand for older, Terraform 0.11 and earlier, syntax</i></summary>
-
-> `input_type` is required with this data source.
-
-```hcl
-provider "sops" {}
-
-# using sops/test-fixtures/basic.yaml as an example
-data "local_file" "yaml" {
-  filename = "basic.yaml"
-}
-
-data "sops_external" "demo-secret" {
-  source     = "${data.local_file.yaml.content}"
-  input_type = "yaml"
-}
-
-output "do-something" {
-  value = "${data.sops_external.demo-secret.data.hello}"
-}
-```
-</details>
-
-
-
 ## Install
 
-Download the latest [release](https://github.com/carlpett/terraform-provider-sops/releases) for your environment and unpack it to the user plugin directory. The user plugins directory is in one of the following locations, depending on the host operating system:
-* Windows `%APPDATA%\terraform.d\plugins`
-* All other systems `~/.terraform.d/plugins`
+For Terraform 0.13 and later, specify the source and version in a `required_providers` block:
 
-### Allowing code to run on macOS
+```hcl
+terraform {
+  required_providers {
+    sops = {
+      source = "carlpett/sops"
+      version = "~> 0.5"
+    }
+  }
+}
+```
 
-Apple macOS Catalina (10.15.0) and later prevents unsigned code from running. When you first run `terraform plan` it will pop up a message saying
-> **“terraform-provider-sops_v0.5.0” cannot be opened because the developer cannot be verified.**
-> macOS cannot verify that this app is free from malware.
+## Migrating state from older Terraform versions
+To migrate a state from Terraform 0.12 or older, there is a need to change how the provider is referenced. After adding the `required_providers` block as shown above, Terraform provides a command to do the migration:
 
-To allow the plugin to run, go to the **Security & Privacy** tab of System Preferences and you should see a message saying
-> “terraform-provider-sops_v0.5.0” was blocked from use because it is not from an identified developer.
-
-Click the `Allow Anyway` button.
+```shell
+terraform state replace-provider registry.terraform.io/-/sops registry.terraform.io/carlpett/sops
+```
 
 ## Development
 Building and testing is most easily performed with `make build` and `make test` respectively.
