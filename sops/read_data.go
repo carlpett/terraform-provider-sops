@@ -6,6 +6,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"go.mozilla.org/sops/v3/decrypt"
 	"gopkg.in/yaml.v2"
+
+	"github.com/carlpett/terraform-provider-sops/sops/internal/dotenv"
+	"github.com/carlpett/terraform-provider-sops/sops/internal/ini"
 )
 
 // readData consolidates the logic of extracting the from the various input methods and setting it on the ResourceData
@@ -28,6 +31,10 @@ func readData(content []byte, format string, d *schema.ResourceData) error {
 		err = json.Unmarshal(cleartext, &data)
 	case "yaml":
 		err = yaml.Unmarshal(cleartext, &data)
+	case "dotenv":
+		err = dotenv.Unmarshal(cleartext, &data)
+	case "ini":
+		err = ini.Unmarshal(cleartext, &data)
 	}
 	if err != nil {
 		return err
