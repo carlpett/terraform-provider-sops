@@ -11,7 +11,7 @@ default: build
 
 style:
 	@echo ">> checking code style"
-	! gofmt -d $(shell find . -path ./vendor -prune -o -name '*.go' -print) | grep '^'
+	! gofmt -d $(shell find . -name '*.go' -print) | grep '^'
 
 vet:
 	@echo ">> vetting code"
@@ -23,12 +23,12 @@ test:
 
 build:
 	@echo ">> building binaries"
-	go build -mod=vendor -o terraform-provider-sops
+	go build -o terraform-provider-sops
 
 crossbuild: $(GOPATH)/bin/gox
 	@echo ">> cross-building"
 	gox -arch="$(CROSSBUILD_ARCH)" -os="$(CROSSBUILD_OS)" -osarch="$(addprefix !,$(subst _,/,$(SKIP_OSARCH)))" \
-		-mod=vendor -output="binaries/$(VERSION)/{{.OS}}_{{.Arch}}/terraform-provider-sops_$(VERSION)"
+		-output="binaries/$(VERSION)/{{.OS}}_{{.Arch}}/terraform-provider-sops_$(VERSION)"
 
 $(GOPATH)/bin/gox:
 	# Need to disable modules for this to not pollute go.mod
