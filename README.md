@@ -28,8 +28,6 @@ terraform {
   }
 }
 
-provider "sops" {}
-
 data "sops_file" "demo-secret" {
   source_file = "demo-secret.enc.json"
 }
@@ -77,8 +75,6 @@ terraform {
     }
   }
 }
-
-provider "sops" {}
 
 # using sops/test-fixtures/basic.yaml as an example
 data "local_file" "yaml" {
