@@ -4,7 +4,7 @@ RELEASE = $(patsubst v%,%,$(VERSION))# Remove leading v to comply with Terraform
 
 CROSSBUILD_OS   = linux windows darwin
 CROSSBUILD_ARCH = 386 amd64 arm64
-SKIP_OSARCH     = darwin_386
+SKIP_OSARCH     = darwin_386 windows_arm64
 OSARCH_COMBOS   = $(filter-out $(SKIP_OSARCH),$(foreach os,$(CROSSBUILD_OS),$(addprefix $(os)_,$(CROSSBUILD_ARCH))))
 
 default: build
