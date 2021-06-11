@@ -2,17 +2,17 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/golang:1.15
+      - image: circleci/golang:1.16
     working_directory: /go/src/github.com/carlpett/terraform-provider-sops
     steps:
       - checkout
       - run: gpg --import test/testing-key.pgp
-      - run: make test build
+      - run: make test crossbuild
       - store_artifacts:
           path: terraform-provider-sops
   release:
     docker:
-      - image: circleci/golang:1.15
+      - image: circleci/golang:1.16
     working_directory: /go/src/github.com/carlpett/terraform-provider-sops
     steps:
       - checkout
