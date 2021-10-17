@@ -8,7 +8,6 @@ require (
 	github.com/Azure/azure-sdk-for-go v36.1.0+incompatible // indirect
 	github.com/Azure/go-autorest/autorest/adal v0.8.1-0.20191028180845-3492b2aff503 // indirect
 	github.com/Azure/go-autorest/autorest/azure/auth v0.4.0 // indirect
-	github.com/go-sql-driver/mysql v1.5.0 // indirect
 	github.com/golang/groupcache v0.0.0-20191027212112-611e8accdfc9 // indirect
 	github.com/hashicorp/go-hclog v0.10.0 // indirect
 	github.com/hashicorp/hcl2 v0.0.0-20191002203319-fb75b3253c80 // indirect
@@ -18,15 +17,13 @@ require (
 	github.com/howeyc/gopass v0.0.0-20190910152052-7cb4b85ec19c // indirect
 	github.com/jstemmer/go-junit-report v0.9.1 // indirect
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
-	github.com/mozilla-services/yaml v0.0.0-20191106225358-5c216288813c // indirect
 	github.com/posener/complete v1.2.2 // indirect
 	github.com/terraform-providers/terraform-provider-local v1.4.0
 	github.com/ulikunitz/xz v0.5.6 // indirect
-	github.com/vektra/mockery v1.1.2 // indirect
 	github.com/vmihailenco/msgpack v4.0.4+incompatible // indirect
-	go.mozilla.org/sops/v3 v3.7.0
+	go.mozilla.org/sops/v3 v3.7.1
 	go.opencensus.io v0.22.2 // indirect
-	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e // indirect
+	golang.org/x/tools v0.0.0-20200323144430-8dcfad9e016e // indirect
 	google.golang.org/appengine v1.6.5 // indirect
 	gopkg.in/ini.v1 v1.62.0
 	gopkg.in/yaml.v2 v2.2.8
