@@ -2,8 +2,10 @@ package sops
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"go.mozilla.org/sops/v3"
 	"go.mozilla.org/sops/v3/decrypt"
 	"gopkg.in/yaml.v2"
 
@@ -14,6 +16,9 @@ import (
 // readData consolidates the logic of extracting the from the various input methods and setting it on the ResourceData
 func readData(content []byte, format string, d *schema.ResourceData) error {
 	cleartext, err := decrypt.Data(content, format)
+	if userErr, ok := err.(sops.UserError); ok {
+		err = fmt.Errorf(userErr.UserError())
+	}
 	if err != nil {
 		return err
 	}
