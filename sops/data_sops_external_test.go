@@ -5,16 +5,12 @@ import (
 	"os"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
 const configTestDataSourceSopsExternal_basic = `
-data "local_file" "test_basic" {
-  filename = "%s/test-fixtures/basic.yaml"
-}
-
 data "sops_external" "test_basic" {
-  source     = "${data.local_file.test_basic.content}"
+  source     = file("%s/test-fixtures/basic.yaml")
   input_type = "yaml"
 }`
 
@@ -41,12 +37,8 @@ func TestDataSourceSopsExternal(t *testing.T) {
 }
 
 const configTestDataSourceSopsExternal_nested = `
-data "local_file" "test_nested" {
-  filename = "%s/test-fixtures/nested.yaml"
-}
-
 data "sops_external" "test_nested" {
-  source     = "${data.local_file.test_nested.content}"
+  source     = file("%s/test-fixtures/nested.yaml")
   input_type = "yaml"
 }`
 
@@ -71,12 +63,8 @@ func TestDataSourceSopsExternal_nested(t *testing.T) {
 }
 
 const configTestDataSourceSopsExternal_raw = `
-data "local_file" "test_raw" {
-  filename = "%s/test-fixtures/raw.txt"
-}
-
 data "sops_external" "test_raw" {
-  source     = "${data.local_file.test_raw.content}"
+  source     = file("%s/test-fixtures/raw.txt")
   input_type = "raw"
 }`
 
@@ -100,12 +88,8 @@ func TestDataSourceSopsExternal_raw(t *testing.T) {
 }
 
 const configTestDataSourceSopsExternal_simplelist = `
-data "local_file" "test_list" {
-  filename = "%s/test-fixtures/simple-list.yaml"
-}
-
 data "sops_external" "test_list" {
-  source     = "${data.local_file.test_list.content}"
+  source     = file("%s/test-fixtures/simple-list.yaml")
   input_type = "yaml"
 }`
 
@@ -130,12 +114,8 @@ func TestDataSourceSopsExternal_simplelist(t *testing.T) {
 }
 
 const configTestDataSourceSopsExternal_complexlist = `
-data "local_file" "test_list" {
-  filename = "%s/test-fixtures/complex-list.yaml"
-}
-
 data "sops_external" "test_list" {
-  source     = "${data.local_file.test_list.content}"
+  source     = file("%s/test-fixtures/complex-list.yaml")
   input_type = "yaml"
 }`
 
@@ -162,12 +142,8 @@ func TestDataSourceSopsExternal_complexlist(t *testing.T) {
 }
 
 const configTestDataSourceSopsExternal_json = `
-data "local_file" "test_json" {
-  filename = "%s/test-fixtures/basic.json"
-}
-
 data "sops_external" "test_json" {
-  source     = "${data.local_file.test_json.content}"
+  source     = file("%s/test-fixtures/basic.json")
   input_type = "json"
 }`
 

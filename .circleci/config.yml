@@ -2,8 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/golang:1.16
-    working_directory: /go/src/github.com/carlpett/terraform-provider-sops
+      - image: cimg/go:1.18
     steps:
       - checkout
       - run: gpg --import test/testing-key.pgp
@@ -12,8 +11,7 @@ jobs:
           path: terraform-provider-sops
   release:
     docker:
-      - image: circleci/golang:1.16
-    working_directory: /go/src/github.com/carlpett/terraform-provider-sops
+      - image: cimg/go:1.18
     steps:
       - checkout
       - run: gpg --import test/testing-key.pgp

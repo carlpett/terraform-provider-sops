@@ -4,7 +4,7 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceExternal() *schema.Resource {
@@ -24,13 +24,13 @@ func dataSourceExternal() *schema.Resource {
 			},
 
 			"data": &schema.Schema{
-				Type:     schema.TypeMap,
-				Computed: true,
+				Type:      schema.TypeMap,
+				Computed:  true,
 				Sensitive: true,
 			},
 			"raw": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:      schema.TypeString,
+				Computed:  true,
 				Sensitive: true,
 			},
 		},

@@ -1,8 +1,8 @@
 package dotenv
 
 import (
-	"fmt"
 	"bytes"
+	"fmt"
 	"strings"
 )
 
