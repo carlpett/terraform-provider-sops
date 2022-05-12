@@ -35,9 +35,3 @@ jobs:
 
       - name: Release
         run: make release
-
-      - name: Trigger Docker Hub automated build
-        run: |
-          curl -X POST -H "Content-Type: application/json" \
-            --data '{"source_type": "Tag", "source_name": "${{ github.ref_name }}"}' \
-            "https://registry.hub.docker.com/u/carlpett/terraform-provider-sops/trigger/${{ secrets.DOCKER_HUB_TRIGGER_TOKEN }}/"
