@@ -1,0 +1,33 @@
+name: Tests
+
+on:
+  pull_request:
+  push:
+
+env:
+  GO_VERSION: '1.18'
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup golang ${{ env.GO_VERSION }}
+        uses: actions/setup-go@v3
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Build
+        run: go build -v .
+
+      - name: Import test GPG key
+        run: gpg --import test/testing-key.pgp
+
+      - name: Test
+        run: make test
+
+      - name: Crossbuild
+        run: make crossbuild
