@@ -34,20 +34,16 @@ $(GOPATH)/bin/gox:
 	# Need to disable modules for this to not pollute go.mod
 	@GO111MODULE=off go get -u github.com/mitchellh/gox
 
-release: crossbuild bin/hub
+# This uses the `hub` tool, which is preinstalled on GitHub Actions runners.
+release: crossbuild
 	@echo ">> uploading release $(VERSION)"
 	mkdir -p releases
 	set -e; for OSARCH in $(OSARCH_COMBOS); do \
 		zip -j releases/terraform-provider-sops_$(RELEASE)_$$OSARCH.zip binaries/$(VERSION)/$$OSARCH/terraform-provider-sops_* > /dev/null; \
-		./bin/hub release edit -m "" -a "releases/terraform-provider-sops_$(RELEASE)_$$OSARCH.zip#terraform-provider-sops_$(RELEASE)_$$OSARCH.zip" $(VERSION); \
+		hub release edit -m "" -a "releases/terraform-provider-sops_$(RELEASE)_$$OSARCH.zip#terraform-provider-sops_$(RELEASE)_$$OSARCH.zip" $(VERSION); \
 	done
 	@echo ">>> generating sha256sums:"
 	cd releases; sha256sum *.zip | tee terraform-provider-sops_$(RELEASE)_SHA256SUMS
-	./bin/hub release edit -m "" -a "releases/terraform-provider-sops_$(RELEASE)_SHA256SUMS#terraform-provider-sops_$(RELEASE)_SHA256SUMS" $(VERSION)
-
-bin/hub:
-	@mkdir -p bin
-	curl -sL 'https://github.com/github/hub/releases/download/v2.14.1/hub-linux-amd64-2.14.1.tgz' | \
-		tar -xzf - --strip-components 2 -C bin --wildcards '*/bin/hub'
+	hub release edit -m "" -a "releases/terraform-provider-sops_$(RELEASE)_SHA256SUMS#terraform-provider-sops_$(RELEASE)_SHA256SUMS" $(VERSION)
 
 .PHONY: all style vet test build crossbuild release
