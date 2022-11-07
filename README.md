@@ -111,6 +111,10 @@ terraform {
 }
 ```
 
+## CI usage
+
+For CI, the same variables or context that SOPS uses locally must be provided in the runtime. The provider does not manage the required values. 
+
 ## Development
 Building and testing is most easily performed with `make build` and `make test` respectively.
 
@@ -147,3 +151,5 @@ Could not retrieve the list of available versions for provider -/sops:
 provider registry registry.terraform.io does not have a provider named
 registry.terraform.io/-/sops
 ```
+
+
