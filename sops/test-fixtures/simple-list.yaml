@@ -1,6 +1,7 @@
 a_list:
 - ENC[AES256_GCM,data:sxhIdQ==,iv:y2HITUKrZ/JgJT+9+UI5BDj1SMaGO0pTSvjJhsSW6r4=,tag:ZuCjI7N9WKjAshTaPYpspQ==,type:str]
 - ENC[AES256_GCM,data:6yi4mg==,iv:KS4tBgQAXDfpPeWD6Ew6w1jolp4L9VY7NswmqVjivPE=,tag:9P8obopM4+BN4F9Jk2vGig==,type:str]
+- null
 sops:
     kms: []
     gcp_kms: []

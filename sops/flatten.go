@@ -23,12 +23,15 @@ func flatten(data map[string]interface{}) map[string]string {
 			for fk, fv := range flattenSlice(typed) {
 				ret[fmt.Sprintf("%s.%s", k, fk)] = fv
 			}
+		case nil:
+			ret[k] = "null"
 		default:
 			ret[k] = fmt.Sprint(typed)
 		}
 	}
 	return ret
 }
+
 func flattenSlice(data []interface{}) map[string]string {
 	ret := make(map[string]string)
 	for idx, v := range data {
@@ -45,6 +48,8 @@ func flattenSlice(data []interface{}) map[string]string {
 			for fk, fv := range flattenSlice(typed) {
 				ret[fmt.Sprintf("%d.%s", idx, fk)] = fv
 			}
+		case nil:
+			ret[fmt.Sprint(idx)] = "null"
 		default:
 			ret[fmt.Sprint(idx)] = fmt.Sprint(typed)
 		}

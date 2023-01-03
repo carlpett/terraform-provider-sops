@@ -2,6 +2,7 @@ hello: ENC[AES256_GCM,data:gzR9Gz4=,iv:cbMZU1nUyo5mFCW+Vel2UYbnbMA/0wKxsQzy/WVAY
 integer: ENC[AES256_GCM,data:9w==,iv:8gMmdZTOgdGdHlXvipvz4qchxFWMwKg95Zzvh/I84G4=,tag:jxzxI0m7stEK+zr+yc0Wsg==,type:int]
 float: ENC[AES256_GCM,data:UtBf,iv:Z7hdgplz8QP9JyC/DX5WWiazdYjBvZTVolvyf9VNvyw=,tag:v8VujtMTcuM4GuZKGreVbA==,type:float]
 bool: ENC[AES256_GCM,data:xW/sRw==,iv:0vXeg5/SBUDo8dmHHpDTdxMwpoCdx+ERE7dq4UgqVsc=,tag:RweVRArPBVskGtnPBiQ0Yg==,type:bool]
+null_value: null
 sops:
     kms: []
     gcp_kms: []

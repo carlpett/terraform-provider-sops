@@ -18,12 +18,14 @@ func TestFlattening(t *testing.T) {
 				"an_integer": 12,
 				"a_bool":     true,
 				"a_float":    1.1,
+				"a_null":     nil,
 			},
 			expected: map[string]string{
 				"a_string":   "foo",
 				"an_integer": "12",
 				"a_bool":     "true",
 				"a_float":    "1.1",
+				"a_null":     "null",
 			},
 		},
 		{
@@ -38,11 +40,12 @@ func TestFlattening(t *testing.T) {
 		{
 			name: "lists are unpacked with index keys",
 			input: map[string]interface{}{
-				"a_list": []interface{}{1, 2},
+				"a_list": []interface{}{1, 2, nil},
 			},
 			expected: map[string]string{
 				"a_list.0": "1",
 				"a_list.1": "2",
+				"a_list.2": "null",
 			},
 		},
 		{
@@ -54,6 +57,7 @@ func TestFlattening(t *testing.T) {
 				  b:
 				    c:
 				    - d: 2
+					- e: null
 			*/
 			input: map[string]interface{}{
 				"foo": []interface{}{
@@ -61,7 +65,7 @@ func TestFlattening(t *testing.T) {
 						"a": 1,
 						"b": map[string]interface{}{
 							"c": []interface{}{
-								map[string]interface{}{"d": 2},
+								map[string]interface{}{"d": 2, "e": nil},
 							},
 						},
 					},
@@ -70,6 +74,7 @@ func TestFlattening(t *testing.T) {
 			expected: map[string]string{
 				"foo.0.a":       "1",
 				"foo.0.b.c.0.d": "2",
+				"foo.0.b.c.0.e": "null",
 			},
 		},
 	}

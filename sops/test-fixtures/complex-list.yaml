@@ -1,6 +1,7 @@
 a_list:
 -   name: ENC[AES256_GCM,data:nX7D,iv:HdTElsGgx0Z2LcNmUGSbMCTyVhRD0UQMi8ztAEYQqJQ=,tag:D/sIqf+TXpUhyTbugEPpww==,type:str]
     index: ENC[AES256_GCM,data:uw==,iv:1Tz2jR86XjGVRKwaY3XO8gAH102xEKDFr/MNQbxO8GU=,tag:avkgp+Q9CraUC+hjuhYyXQ==,type:int]
+    value: null
 -   name: ENC[AES256_GCM,data:uNO3,iv:y9ip72kPma2nTrJsqCn/+DDKLc6GeOeuEHEO2Tf2h9A=,tag:eTux2TxifhzMtWFYmlMnKA==,type:str]
     index: ENC[AES256_GCM,data:fA==,iv:6Vmcm5FRa3vLwtt5P4IjiOtJi76TfKIg+D8Bx10jaTA=,tag:EN7hJoYOXmyEynvCy7GZ6w==,type:int]
 sops:
