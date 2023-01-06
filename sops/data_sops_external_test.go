@@ -30,6 +30,7 @@ func TestDataSourceSopsExternal(t *testing.T) {
 					resource.TestCheckResourceAttr("data.sops_external.test_basic", "data.integer", "0"),
 					resource.TestCheckResourceAttr("data.sops_external.test_basic", "data.float", "0.2"),
 					resource.TestCheckResourceAttr("data.sops_external.test_basic", "data.bool", "true"),
+					resource.TestCheckResourceAttr("data.sops_external.test_basic", "data.null_value", "null"),
 				),
 			},
 		},
@@ -107,6 +108,7 @@ func TestDataSourceSopsExternal_simplelist(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("data.sops_external.test_list", "data.a_list.0", "val1"),
 					resource.TestCheckResourceAttr("data.sops_external.test_list", "data.a_list.1", "val2"),
+					resource.TestCheckResourceAttr("data.sops_external.test_list", "data.a_list.2", "null"),
 				),
 			},
 		},
@@ -133,6 +135,7 @@ func TestDataSourceSopsExternal_complexlist(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("data.sops_external.test_list", "data.a_list.0.name", "foo"),
 					resource.TestCheckResourceAttr("data.sops_external.test_list", "data.a_list.0.index", "0"),
+					resource.TestCheckResourceAttr("data.sops_external.test_list", "data.a_list.0.value", "null"),
 					resource.TestCheckResourceAttr("data.sops_external.test_list", "data.a_list.1.name", "bar"),
 					resource.TestCheckResourceAttr("data.sops_external.test_list", "data.a_list.1.index", "1"),
 				),
@@ -163,6 +166,7 @@ func TestDataSourceSopsExternal_json(t *testing.T) {
 					resource.TestCheckResourceAttr("data.sops_external.test_json", "data.integer", "0"),
 					resource.TestCheckResourceAttr("data.sops_external.test_json", "data.float", "0.2"),
 					resource.TestCheckResourceAttr("data.sops_external.test_json", "data.bool", "true"),
+					resource.TestCheckResourceAttr("data.sops_external.test_json", "data.null", "null"),
 				),
 			},
 		},

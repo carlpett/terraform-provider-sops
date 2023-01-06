@@ -3,6 +3,7 @@
 	"integer": "ENC[AES256_GCM,data:1Q==,iv:xF2EsP5hxUpkUcS8OjsFWgSQ2D1dXxf63pnajpkFIuE=,tag:LJRnzsVNl7Ymh8yrdwdpnA==,type:float]",
 	"float": "ENC[AES256_GCM,data:TK3k,iv:O64HQZG4XDATN4c3k8VTaATuSR59ynhWEQsQRUSwSog=,tag:X1j4tMpV/vlQ5xCjzuXymw==,type:float]",
 	"bool": "ENC[AES256_GCM,data:QXxEsw==,iv:GVg4UD+/1VhA4QqSF6RP3YPJsdxT/1xJcg5NLzJkTzA=,tag:CLMVT+T3x8gkDsaOyUmbVw==,type:bool]",
+    "null": null,
 	"sops": {
 		"kms": null,
 		"gcp_kms": null,
