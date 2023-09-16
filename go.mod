@@ -1,6 +1,6 @@
 module github.com/carlpett/terraform-provider-sops
 
-go 1.17
+go 1.21
 
 require (
 	github.com/getsops/sops/v3 v3.8.0
