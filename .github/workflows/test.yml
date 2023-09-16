@@ -5,7 +5,7 @@ on:
   push:
 
 env:
-  GO_VERSION: '1.18'
+  GO_VERSION: '1.21'
 
 jobs:
   build-and-test:
