@@ -17,4 +17,17 @@ output "db-password" {
   # Access the password variable that is under db via the terraform map of data
   value = data.sops_file.demo-secret.data["db.password"]
 }
+
+data "http" "remote_sops_data" {
+  url = "https://sops.example/my-data"
+}
+
+data "sops_external" "demo-secret" {
+  source     = data.http.remote_sops_data.body
+  input_type = "yaml"
+}
+
+output "root-value-hello" {
+  value = data.sops_external.demo-secret.data.hello
+}
 ```
