@@ -34,16 +34,16 @@ $(GOPATH)/bin/gox:
 	# Need to disable modules for this to not pollute go.mod
 	@GO111MODULE=off go get -u github.com/mitchellh/gox
 
-# This uses the `hub` tool, which is preinstalled on GitHub Actions runners.
+# This uses the `gh` tool, which is preinstalled on GitHub Actions runners.
 release: crossbuild
 	@echo ">> uploading release $(VERSION)"
 	mkdir -p releases
 	set -e; for OSARCH in $(OSARCH_COMBOS); do \
 		zip -j releases/terraform-provider-sops_$(RELEASE)_$$OSARCH.zip binaries/$(VERSION)/$$OSARCH/terraform-provider-sops_* > /dev/null; \
-		hub release edit -m "" -a "releases/terraform-provider-sops_$(RELEASE)_$$OSARCH.zip#terraform-provider-sops_$(RELEASE)_$$OSARCH.zip" $(VERSION); \
+		gh release upload $(VERSION) "releases/terraform-provider-sops_$(RELEASE)_$$OSARCH.zip#terraform-provider-sops_$(RELEASE)_$$OSARCH.zip"; \
 	done
 	@echo ">>> generating sha256sums:"
 	cd releases; sha256sum *.zip | tee terraform-provider-sops_$(RELEASE)_SHA256SUMS
-	hub release edit -m "" -a "releases/terraform-provider-sops_$(RELEASE)_SHA256SUMS#terraform-provider-sops_$(RELEASE)_SHA256SUMS" $(VERSION)
+	gh release upload $(VERSION) "releases/terraform-provider-sops_$(RELEASE)_SHA256SUMS#terraform-provider-sops_$(RELEASE)_SHA256SUMS"
 
 .PHONY: all style vet test build crossbuild release
