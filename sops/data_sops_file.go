@@ -1,8 +1,10 @@
 package sops
 
 import (
-	"fmt"
+	"context"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"io/ioutil"
+	"os"
 	"path"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -10,8 +12,7 @@ import (
 
 func dataSourceFile() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceFileRead,
-
+		ReadContext: dataSourceFileRead,
 		Schema: map[string]*schema.Schema{
 			"input_type": {
 				Type:     schema.TypeString,
@@ -38,16 +39,28 @@ func dataSourceFile() *schema.Resource {
 	}
 }
 
-func dataSourceFileRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceFileRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	// Get the environment variables from the provider configuration
+	envVars, ok := meta.(map[string]interface{})
+	if !ok {
+		return diag.Errorf("Unable to get provider configuration")
+	}
+	// Set the environment variables
+	for key, value := range envVars {
+		if strValue, ok := value.(string); ok {
+			os.Setenv(key, strValue)
+		}
+	}
+
 	sourceFile := d.Get("source_file").(string)
 	content, err := ioutil.ReadFile(sourceFile)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	var format string
-	if input_type := d.Get("input_type").(string); input_type != "" {
-		format = input_type
+	if inputType := d.Get("input_type").(string); inputType != "" {
+		format = inputType
 	} else {
 		switch ext := path.Ext(sourceFile); ext {
 		case ".json":
@@ -59,13 +72,17 @@ func dataSourceFileRead(d *schema.ResourceData, meta interface{}) error {
 		case ".ini":
 			format = "ini"
 		default:
-			return fmt.Errorf("Don't know how to decode file with extension %s, set input_type to json, yaml or raw as appropriate", ext)
+			return diag.Errorf("don't know how to decode file with extension %s, set input_type to json, yaml or raw as appropriate", ext)
 		}
 	}
 
 	if err := validateInputType(format); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
-	return readData(content, format, d)
+	if err := readData(content, format, d); err != nil {
+		return diag.FromErr(err)
+	}
+
+	return nil
 }
