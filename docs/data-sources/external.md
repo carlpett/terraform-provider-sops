@@ -24,7 +24,7 @@ output "root-value-hello" {
 ## Argument Reference
 
 * `source` - (Required) A string with sops-encrypted data
-* `input_type` - (Required) `yaml`, `json` or `raw`, depending on the structure of the un-encrypted data.
+* `input_type` - (Required) `yaml`, `json` `dotenv` (`.env`), `ini` or `raw`, depending on the structure of the un-encrypted data.
 
 ## Attribute Reference
 
