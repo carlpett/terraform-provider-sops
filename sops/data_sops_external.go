@@ -1,7 +1,10 @@
 package sops
 
 import (
+	"context"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"io/ioutil"
+	"os"
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -9,8 +12,7 @@ import (
 
 func dataSourceExternal() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceExternalRead,
-
+		ReadContext: dataSourceExternalRead,
 		Schema: map[string]*schema.Schema{
 			"input_type": {
 				Type:     schema.TypeString,
@@ -37,16 +39,33 @@ func dataSourceExternal() *schema.Resource {
 	}
 }
 
-func dataSourceExternalRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceExternalRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	// Get the environment variables from the provider configuration
+	envVars, ok := meta.(map[string]interface{})
+	if !ok {
+		return diag.Errorf("Unable to get provider configuration")
+	}
+	// Set the environment variables
+	for key, value := range envVars {
+		if strValue, ok := value.(string); ok {
+			os.Setenv(key, strValue)
+		}
+	}
+
 	source := d.Get("source").(string)
 	content, err := ioutil.ReadAll(strings.NewReader(source))
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	format := d.Get("input_type").(string)
 	if err := validateInputType(format); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	return readData(content, format, d)
+
+	if err := readData(content, format, d); err != nil {
+		return diag.FromErr(err)
+	}
+
+	return nil
 }
