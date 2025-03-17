@@ -1,52 +1,104 @@
 package sops
 
 import (
+	"context"
 	"io/ioutil"
 	"strings"
 
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-framework/datasource"
+	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-func dataSourceExternal() *schema.Resource {
-	return &schema.Resource{
-		Read: dataSourceExternalRead,
+var _ datasource.DataSource = &externalDataSource{}
 
-		Schema: map[string]*schema.Schema{
-			"input_type": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+func newExternalDataSource() datasource.DataSource {
+	return &externalDataSource{}
+}
+
+type externalDataSource struct{}
+
+type externalDataSourceModel struct {
+	InputType types.String `tfsdk:"input_type"`
+	Source    types.String `tfsdk:"source"`
+	Data      types.Map    `tfsdk:"data"`
+	Raw       types.String `tfsdk:"raw"`
+	Id        types.String `tfsdk:"id"`
+}
+
+func (d *externalDataSource) Metadata(_ context.Context, _ datasource.MetadataRequest, resp *datasource.MetadataResponse) {
+	resp.TypeName = "sops_external"
+}
+
+func (d *externalDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+	resp.Schema = schema.Schema{
+		Description: "Decrypt sops-encrypted data from external commands",
+		Attributes: map[string]schema.Attribute{
+			"input_type": schema.StringAttribute{
+				Description: "Type of the input data (json, yaml, raw)",
+				Optional:    true,
 			},
-			"source": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+			"source": schema.StringAttribute{
+				Description: "Command to execute to get encrypted data",
+				Required:    true,
 			},
 
-			"data": &schema.Schema{
-				Type:      schema.TypeMap,
-				Computed:  true,
-				Sensitive: true,
+			"data": schema.MapAttribute{
+				Description: "Decrypted data",
+				Computed:    true,
+				Sensitive:   true,
+				ElementType: types.StringType,
 			},
-			"raw": &schema.Schema{
-				Type:      schema.TypeString,
-				Computed:  true,
-				Sensitive: true,
+			"raw": schema.StringAttribute{
+				Description: "Raw decrypted content",
+				Computed:    true,
+				Sensitive:   true,
+			},
+			"id": schema.StringAttribute{
+				Description: "Unique identifier for this data source",
+				Computed:    true,
 			},
 		},
 	}
 }
 
-func dataSourceExternalRead(d *schema.ResourceData, meta interface{}) error {
-	source := d.Get("source").(string)
-	content, err := ioutil.ReadAll(strings.NewReader(source))
-	if err != nil {
-		return err
+func (d *externalDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
+	var config externalDataSourceModel
+	diags := req.Config.Get(ctx, &config)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
 	}
 
-	format := d.Get("input_type").(string)
-	if err := validateInputType(format); err != nil {
-		return err
+	source := config.Source.ValueString()
+	content, err := ioutil.ReadAll(strings.NewReader(source))
+	if err != nil {
+		resp.Diagnostics.AddError("Error reading source", err.Error())
+		return
 	}
-	return readData(content, format, d)
+
+	format := config.InputType.ValueString()
+	if err := validateInputType(format); err != nil {
+		resp.Diagnostics.AddError("Invalid Input Type", err.Error())
+		return
+	}
+
+	data, raw, err := readData(content, format)
+	if err != nil {
+		resp.Diagnostics.AddError("Error Reading Data", err.Error())
+		return
+	}
+
+	m, mapDiags := types.MapValueFrom(ctx, types.StringType, data)
+	resp.Diagnostics.Append(mapDiags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	config.Data = m
+	config.Raw = types.StringValue(raw)
+	config.Id = types.StringValue("-")
+
+	diags = resp.State.Set(ctx, config)
+	resp.Diagnostics.Append(diags...)
 }

@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
 const configTestDataSourceSopsFile_basic = `
@@ -20,7 +20,7 @@ func TestDataSourceSopsFile_basic(t *testing.T) {
 	}
 	config := fmt.Sprintf(configTestDataSourceSopsFile_basic, wd)
 	resource.UnitTest(t, resource.TestCase{
-		Providers: testAccProviders,
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: config,
@@ -48,7 +48,7 @@ func TestDataSourceSopsFile_nested(t *testing.T) {
 	}
 	config := fmt.Sprintf(configTestDataSourceSopsFile_nested, wd)
 	resource.UnitTest(t, resource.TestCase{
-		Providers: testAccProviders,
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: config,
@@ -74,7 +74,7 @@ func TestDataSourceSopsFile_raw(t *testing.T) {
 	}
 	config := fmt.Sprintf(configTestDataSourceSopsFile_raw, wd)
 	resource.UnitTest(t, resource.TestCase{
-		Providers: testAccProviders,
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: config,
@@ -98,7 +98,7 @@ func TestDataSourceSopsFile_simplelist(t *testing.T) {
 	}
 	config := fmt.Sprintf(configTestDataSourceSopsFile_simplelist, wd)
 	resource.UnitTest(t, resource.TestCase{
-		Providers: testAccProviders,
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: config,
@@ -124,7 +124,7 @@ func TestDataSourceSopsFile_complexlist(t *testing.T) {
 	}
 	config := fmt.Sprintf(configTestDataSourceSopsFile_complexlist, wd)
 	resource.UnitTest(t, resource.TestCase{
-		Providers: testAccProviders,
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: config,
@@ -152,7 +152,7 @@ func TestDataSourceSopsFile_json(t *testing.T) {
 	}
 	config := fmt.Sprintf(configTestDataSourceSopsFile_json, wd)
 	resource.UnitTest(t, resource.TestCase{
-		Providers: testAccProviders,
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: config,
