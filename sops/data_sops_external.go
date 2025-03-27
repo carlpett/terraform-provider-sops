@@ -39,7 +39,7 @@ func (d *externalDataSource) Schema(_ context.Context, _ datasource.SchemaReques
 				Optional:    true,
 			},
 			"source": schema.StringAttribute{
-				Description: "Command to execute to get encrypted data",
+				Description: "A string with sops-encrypted data",
 				Required:    true,
 			},
 

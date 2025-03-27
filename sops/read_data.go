@@ -18,7 +18,7 @@ func readData(content []byte, format string) (map[string]string, string, error) 
 		err = fmt.Errorf(userErr.UserError())
 	}
 	if err != nil {
-		return nil, "", fmt.Errorf("Error decrypting sops file: %s", err)
+		return nil, "", fmt.Errorf("Error decrypting sops file: %w", err)
 	}
 
 	var data map[string]interface{}
@@ -33,7 +33,7 @@ func readData(content []byte, format string) (map[string]string, string, error) 
 		err = ini.Unmarshal(cleartext, &data)
 	}
 	if err != nil {
-		return nil, "", fmt.Errorf("Error parsing decrypted data: %s", err)
+		return nil, "", fmt.Errorf("Error parsing decrypted data: %w", err)
 	}
 
 	return flatten(data), string(cleartext), nil
