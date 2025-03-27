@@ -35,7 +35,7 @@ func (d *externalDataSource) Schema(_ context.Context, _ datasource.SchemaReques
 		Description: "Decrypt sops-encrypted data from external commands",
 		Attributes: map[string]schema.Attribute{
 			"input_type": schema.StringAttribute{
-				Description: "Type of the input data (json, yaml, raw)",
+				Description: "Type of the input data: json, yaml, dotenv, ini, raw",
 				Optional:    true,
 			},
 			"source": schema.StringAttribute{
@@ -79,13 +79,13 @@ func (d *externalDataSource) Read(ctx context.Context, req datasource.ReadReques
 
 	format := config.InputType.ValueString()
 	if err := validateInputType(format); err != nil {
-		resp.Diagnostics.AddError("Invalid Input Type", err.Error())
+		resp.Diagnostics.AddError("Invalid input type", err.Error())
 		return
 	}
 
 	data, raw, err := readData(content, format)
 	if err != nil {
-		resp.Diagnostics.AddError("Error Reading Data", err.Error())
+		resp.Diagnostics.AddError("Error reading data", err.Error())
 		return
 	}
 

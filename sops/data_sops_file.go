@@ -36,7 +36,7 @@ func (d *fileDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, r
 		Description: "Decrypt sops-encrypted files",
 		Attributes: map[string]schema.Attribute{
 			"input_type": schema.StringAttribute{
-				Description: "Type of the input file (json, yaml, raw)",
+				Description: "Type of the input file: json, yaml, dotenv, ini, raw",
 				Optional:    true,
 			},
 			"source_file": schema.StringAttribute{
@@ -74,7 +74,7 @@ func (d *fileDataSource) Read(ctx context.Context, req datasource.ReadRequest, r
 	sourceFile := config.SourceFile.ValueString()
 	content, err := ioutil.ReadFile(sourceFile)
 	if err != nil {
-		resp.Diagnostics.AddError("Error Reading File", err.Error())
+		resp.Diagnostics.AddError("Error reading file", err.Error())
 		return
 	}
 
@@ -93,21 +93,21 @@ func (d *fileDataSource) Read(ctx context.Context, req datasource.ReadRequest, r
 			format = "ini"
 		default:
 			resp.Diagnostics.AddError(
-				"Unknown File Type",
-				fmt.Sprintf("Don't know how to decode file with extension %s, set input_type to json, yaml or raw as appropriate", ext),
+				"Unknown file type",
+				fmt.Sprintf("Don't know how to decode file with extension %s, set input_type as appropriate", ext),
 			)
 			return
 		}
 	}
 
 	if err := validateInputType(format); err != nil {
-		resp.Diagnostics.AddError("Invalid Input Type", err.Error())
+		resp.Diagnostics.AddError("Invalid input type", err.Error())
 		return
 	}
 
 	data, raw, err := readData(content, format)
 	if err != nil {
-		resp.Diagnostics.AddError("Error Reading Data", err.Error())
+		resp.Diagnostics.AddError("Error reading data", err.Error())
 		return
 	}
 
