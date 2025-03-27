@@ -3,6 +3,8 @@ name: Tests
 on:
   pull_request:
   push:
+    branches:
+      - master
 
 env:
   GO_VERSION: '1.21'
