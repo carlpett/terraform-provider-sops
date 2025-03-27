@@ -6,30 +6,21 @@ import (
 
 	"github.com/getsops/sops/v3"
 	"github.com/getsops/sops/v3/decrypt"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"gopkg.in/yaml.v3"
 
 	"github.com/carlpett/terraform-provider-sops/sops/internal/dotenv"
 	"github.com/carlpett/terraform-provider-sops/sops/internal/ini"
 )
 
-// readData consolidates the logic of extracting the from the various input methods and setting it on the ResourceData
-func readData(content []byte, format string, d *schema.ResourceData) error {
+func readData(content []byte, format string) (map[string]string, string, error) {
 	cleartext, err := decrypt.Data(content, format)
 	if userErr, ok := err.(sops.UserError); ok {
 		err = fmt.Errorf(userErr.UserError())
 	}
 	if err != nil {
-		return err
+		return nil, "", fmt.Errorf("Error decrypting sops file: %w", err)
 	}
 
-	// Set output attribute for raw content
-	err = d.Set("raw", string(cleartext))
-	if err != nil {
-		return err
-	}
-
-	// Set output attribute for content as a map (only for json and yaml)
 	var data map[string]interface{}
 	switch format {
 	case "json":
@@ -42,14 +33,8 @@ func readData(content []byte, format string, d *schema.ResourceData) error {
 		err = ini.Unmarshal(cleartext, &data)
 	}
 	if err != nil {
-		return err
+		return nil, "", fmt.Errorf("Error parsing decrypted data: %w", err)
 	}
 
-	err = d.Set("data", flatten(data))
-	if err != nil {
-		return err
-	}
-
-	d.SetId("-")
-	return nil
+	return flatten(data), string(cleartext), nil
 }

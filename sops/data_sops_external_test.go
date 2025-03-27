@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
 const configTestDataSourceSopsExternal_basic = `
@@ -21,7 +21,7 @@ func TestDataSourceSopsExternal(t *testing.T) {
 	}
 	config := fmt.Sprintf(configTestDataSourceSopsExternal_basic, wd)
 	resource.UnitTest(t, resource.TestCase{
-		Providers: testAccProviders,
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: config,
@@ -50,7 +50,7 @@ func TestDataSourceSopsExternal_nested(t *testing.T) {
 	}
 	config := fmt.Sprintf(configTestDataSourceSopsExternal_nested, wd)
 	resource.UnitTest(t, resource.TestCase{
-		Providers: testAccProviders,
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: config,
@@ -76,7 +76,7 @@ func TestDataSourceSopsExternal_raw(t *testing.T) {
 	}
 	config := fmt.Sprintf(configTestDataSourceSopsExternal_raw, wd)
 	resource.UnitTest(t, resource.TestCase{
-		Providers: testAccProviders,
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: config,
@@ -101,7 +101,7 @@ func TestDataSourceSopsExternal_simplelist(t *testing.T) {
 	}
 	config := fmt.Sprintf(configTestDataSourceSopsExternal_simplelist, wd)
 	resource.UnitTest(t, resource.TestCase{
-		Providers: testAccProviders,
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: config,
@@ -128,7 +128,7 @@ func TestDataSourceSopsExternal_complexlist(t *testing.T) {
 	}
 	config := fmt.Sprintf(configTestDataSourceSopsExternal_complexlist, wd)
 	resource.UnitTest(t, resource.TestCase{
-		Providers: testAccProviders,
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: config,
@@ -157,7 +157,7 @@ func TestDataSourceSopsExternal_json(t *testing.T) {
 	}
 	config := fmt.Sprintf(configTestDataSourceSopsExternal_json, wd)
 	resource.UnitTest(t, resource.TestCase{
-		Providers: testAccProviders,
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: config,
