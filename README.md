@@ -2,7 +2,7 @@
 
 A Terraform plugin for using files encrypted with [Mozilla sops](https://github.com/mozilla/sops).
 
-**NOTE:** To prevent plaintext secrets from being written to disk, you *must* set up a secure remote state backend. See the [official docs](https://www.terraform.io/docs/state/sensitive-data.html) on _Sensitive Data in State_ for more information.
+**NOTE:** To prevent plaintext secrets from being written to disk, you *must* set up a secure remote state backend. See the [official docs](https://developer.hashicorp.com/terraform/language/state/sensitive-data) on _Sensitive Data in State_ for more information.
 
 ## Example
 
