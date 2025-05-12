@@ -31,8 +31,7 @@ crossbuild: $(GOPATH)/bin/gox
 		-output="binaries/$(VERSION)/{{.OS}}_{{.Arch}}/terraform-provider-sops_$(VERSION)"
 
 $(GOPATH)/bin/gox:
-	# Need to disable modules for this to not pollute go.mod
-	@GO111MODULE=off go get -u github.com/mitchellh/gox
+	@go install github.com/mitchellh/gox@latest
 
 # This uses the `gh` tool, which is preinstalled on GitHub Actions runners.
 release: crossbuild
