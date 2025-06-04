@@ -41,5 +41,8 @@ func (p *SopsProvider) Resources(_ context.Context) []func() resource.Resource {
 }
 
 func (p *SopsProvider) EphemeralResources(_ context.Context) []func() ephemeral.EphemeralResource {
-	return []func() ephemeral.EphemeralResource{newFileEphemeralResource}
+	return []func() ephemeral.EphemeralResource{
+		newFileEphemeralResource,
+		newExternalEphemeral,
+	}
 }
