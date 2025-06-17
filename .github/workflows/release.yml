@@ -6,7 +6,7 @@ on:
       - v*
 
 env:
-  GO_VERSION: '1.21'
+  GO_VERSION: "1.24"
 
 # Request permissions to write (edit, create) new releases
 permissions:

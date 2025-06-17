@@ -15,7 +15,7 @@ import (
 func readData(content []byte, format string) (map[string]string, string, error) {
 	cleartext, err := decrypt.Data(content, format)
 	if userErr, ok := err.(sops.UserError); ok {
-		err = fmt.Errorf(userErr.UserError())
+		err = userErr
 	}
 	if err != nil {
 		return nil, "", fmt.Errorf("Error decrypting sops file: %w", err)
