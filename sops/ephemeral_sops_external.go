@@ -2,8 +2,6 @@ package sops
 
 import (
 	"context"
-	"io/ioutil"
-	"strings"
 
 	"github.com/hashicorp/terraform-plugin-framework/ephemeral"
 	"github.com/hashicorp/terraform-plugin-framework/ephemeral/schema"
@@ -65,22 +63,13 @@ func (d *externalEphemeralResource) Open(ctx context.Context, req ephemeral.Open
 		return
 	}
 
-	source := config.Source.ValueString()
-	content, err := ioutil.ReadAll(strings.NewReader(source))
+	data, raw, err := getExternalData(config.Source, config.InputType)
 	if err != nil {
-		resp.Diagnostics.AddError("Error reading source", err.Error())
-		return
-	}
-
-	format := config.InputType.ValueString()
-	if err := validateInputType(format); err != nil {
-		resp.Diagnostics.AddError("Invalid input type", err.Error())
-		return
-	}
-
-	data, raw, err := readData(content, format)
-	if err != nil {
-		resp.Diagnostics.AddError("Error reading data", err.Error())
+		if detailedErr, ok := err.(summaryError); ok {
+			resp.Diagnostics.AddError(detailedErr.Summary, detailedErr.Err.Error())
+		} else {
+			resp.Diagnostics.AddError("Failed to decrypt file", err.Error())
+		}
 		return
 	}
 

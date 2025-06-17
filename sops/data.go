@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"path"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -57,5 +58,24 @@ func getFileData(sourceFile types.String, inputType types.String) (data map[stri
 	if err != nil {
 		return nil, "", newSummaryError("Error reading data", err)
 	}
+	return data, raw, nil
+}
+
+func getExternalData(source types.String, inputType types.String) (data map[string]string, raw string, err error) {
+	content, err := ioutil.ReadAll(strings.NewReader(source.ValueString()))
+	if err != nil {
+		return nil, "", newSummaryError("Error reading source", err)
+	}
+
+	format := inputType.ValueString()
+	if err := validateInputType(format); err != nil {
+		return nil, "", newSummaryError("Invalid input type", err)
+	}
+
+	data, raw, err = readData(content, format)
+	if err != nil {
+		return nil, "", newSummaryError("Error reading data", err)
+	}
+
 	return data, raw, nil
 }
