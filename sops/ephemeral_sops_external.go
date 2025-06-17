@@ -23,7 +23,6 @@ type externalEphemeralModel struct {
 	Source    types.String `tfsdk:"source"`
 	Data      types.Map    `tfsdk:"data"`
 	Raw       types.String `tfsdk:"raw"`
-	Id        types.String `tfsdk:"id"`
 }
 
 func (d *externalEphemeralResource) Metadata(_ context.Context, _ ephemeral.MetadataRequest, resp *ephemeral.MetadataResponse) {
@@ -53,10 +52,6 @@ func (d *externalEphemeralResource) Schema(_ context.Context, _ ephemeral.Schema
 				Description: "Raw decrypted content",
 				Computed:    true,
 				Sensitive:   true,
-			},
-			"id": schema.StringAttribute{
-				Description: "Unique identifier for this data source",
-				Computed:    true,
 			},
 		},
 	}
@@ -97,7 +92,6 @@ func (d *externalEphemeralResource) Open(ctx context.Context, req ephemeral.Open
 
 	config.Data = m
 	config.Raw = types.StringValue(raw)
-	config.Id = types.StringValue("-")
 
 	diags = resp.Result.Set(ctx, config)
 	resp.Diagnostics.Append(diags...)

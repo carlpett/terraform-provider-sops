@@ -24,7 +24,6 @@ type fileEphemeralResourceModel struct {
 	SourceFile types.String `tfsdk:"source_file"`
 	Data       types.Map    `tfsdk:"data"`
 	Raw        types.String `tfsdk:"raw"`
-	Id         types.String `tfsdk:"id"`
 }
 
 func (d *fileEphemeralResource) Metadata(_ context.Context, _ ephemeral.MetadataRequest, resp *ephemeral.MetadataResponse) {
@@ -54,10 +53,6 @@ func (d *fileEphemeralResource) Schema(_ context.Context, _ ephemeral.SchemaRequ
 				Description: "Raw decrypted content",
 				Computed:    true,
 				Sensitive:   true,
-			},
-			"id": schema.StringAttribute{
-				Description: "Unique identifier for this data source",
-				Computed:    true,
 			},
 		},
 	}
@@ -119,7 +114,6 @@ func (d *fileEphemeralResource) Open(ctx context.Context, req ephemeral.OpenRequ
 
 	config.Data = m
 	config.Raw = types.StringValue(raw)
-	config.Id = types.StringValue("-")
 
 	diags = resp.Result.Set(ctx, config)
 	resp.Diagnostics.Append(diags...)
