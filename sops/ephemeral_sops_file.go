@@ -2,9 +2,6 @@ package sops
 
 import (
 	"context"
-	"fmt"
-	"io/ioutil"
-	"path"
 
 	"github.com/hashicorp/terraform-plugin-framework/ephemeral"
 	"github.com/hashicorp/terraform-plugin-framework/ephemeral/schema"
@@ -66,48 +63,19 @@ func (d *fileEphemeralResource) Open(ctx context.Context, req ephemeral.OpenRequ
 		return
 	}
 
-	sourceFile := config.SourceFile.ValueString()
-	content, err := ioutil.ReadFile(sourceFile)
+	data, raw, err := getFileData(config.SourceFile, config.InputType)
 	if err != nil {
-		resp.Diagnostics.AddError("Error reading file", err.Error())
-		return
-	}
-
-	var format string
-	if !config.InputType.IsNull() {
-		format = config.InputType.ValueString()
-	} else {
-		switch ext := path.Ext(sourceFile); ext {
-		case ".json":
-			format = "json"
-		case ".yaml", ".yml":
-			format = "yaml"
-		case ".env":
-			format = "dotenv"
-		case ".ini":
-			format = "ini"
-		default:
-			resp.Diagnostics.AddError(
-				"Unknown file type",
-				fmt.Sprintf("Don't know how to decode file with extension %s, set input_type as appropriate", ext),
-			)
-			return
+		if detailedErr, ok := err.(summaryError); ok {
+			resp.Diagnostics.AddError(detailedErr.Summary, detailedErr.Err.Error())
+		} else {
+			resp.Diagnostics.AddError("Failed to decrypt file", err.Error())
 		}
-	}
-
-	if err := validateInputType(format); err != nil {
-		resp.Diagnostics.AddError("Invalid input type", err.Error())
-		return
-	}
-
-	data, raw, err := readData(content, format)
-	if err != nil {
-		resp.Diagnostics.AddError("Error reading data", err.Error())
 		return
 	}
 
 	m, mapDiags := types.MapValueFrom(ctx, types.StringType, data)
 	resp.Diagnostics.Append(mapDiags...)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
