@@ -2,7 +2,8 @@ package sops
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
+	"os"
 	"path"
 	"strings"
 
@@ -27,7 +28,7 @@ func newSummaryError(summary string, err error) summaryError {
 
 func getFileData(sourceFile types.String, inputType types.String) (data map[string]string, raw string, err error) {
 	sourceFileValue := sourceFile.ValueString()
-	content, err := ioutil.ReadFile(sourceFileValue)
+	content, err := os.ReadFile(sourceFileValue)
 	if err != nil {
 		return nil, "", newSummaryError("Error reading file", err)
 	}
@@ -62,7 +63,7 @@ func getFileData(sourceFile types.String, inputType types.String) (data map[stri
 }
 
 func getExternalData(source types.String, inputType types.String) (data map[string]string, raw string, err error) {
-	content, err := ioutil.ReadAll(strings.NewReader(source.ValueString()))
+	content, err := io.ReadAll(strings.NewReader(source.ValueString()))
 	if err != nil {
 		return nil, "", newSummaryError("Error reading source", err)
 	}
