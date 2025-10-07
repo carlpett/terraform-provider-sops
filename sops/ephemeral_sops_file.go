@@ -3,32 +3,31 @@ package sops
 import (
 	"context"
 
-	"github.com/hashicorp/terraform-plugin-framework/datasource"
-	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/ephemeral"
+	"github.com/hashicorp/terraform-plugin-framework/ephemeral/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-var _ datasource.DataSource = &fileDataSource{}
+var _ ephemeral.EphemeralResource = &fileEphemeralResource{}
 
-func newFileDataSource() datasource.DataSource {
-	return &fileDataSource{}
+func newFileEphemeralResource() ephemeral.EphemeralResource {
+	return &fileEphemeralResource{}
 }
 
-type fileDataSource struct{}
+type fileEphemeralResource struct{}
 
-type fileDataSourceModel struct {
+type fileEphemeralResourceModel struct {
 	InputType  types.String `tfsdk:"input_type"`
 	SourceFile types.String `tfsdk:"source_file"`
 	Data       types.Map    `tfsdk:"data"`
 	Raw        types.String `tfsdk:"raw"`
-	Id         types.String `tfsdk:"id"`
 }
 
-func (d *fileDataSource) Metadata(_ context.Context, _ datasource.MetadataRequest, resp *datasource.MetadataResponse) {
+func (d *fileEphemeralResource) Metadata(_ context.Context, _ ephemeral.MetadataRequest, resp *ephemeral.MetadataResponse) {
 	resp.TypeName = "sops_file"
 }
 
-func (d *fileDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+func (d *fileEphemeralResource) Schema(_ context.Context, _ ephemeral.SchemaRequest, resp *ephemeral.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		Description: "Decrypt sops-encrypted files",
 		Attributes: map[string]schema.Attribute{
@@ -52,16 +51,12 @@ func (d *fileDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, r
 				Computed:    true,
 				Sensitive:   true,
 			},
-			"id": schema.StringAttribute{
-				Description: "Unique identifier for this data source",
-				Computed:    true,
-			},
 		},
 	}
 }
 
-func (d *fileDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	var config fileDataSourceModel
+func (d *fileEphemeralResource) Open(ctx context.Context, req ephemeral.OpenRequest, resp *ephemeral.OpenResponse) {
+	var config fileEphemeralResourceModel
 	diags := req.Config.Get(ctx, &config)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -87,8 +82,7 @@ func (d *fileDataSource) Read(ctx context.Context, req datasource.ReadRequest, r
 
 	config.Data = m
 	config.Raw = types.StringValue(raw)
-	config.Id = types.StringValue("-")
 
-	diags = resp.State.Set(ctx, config)
+	diags = resp.Result.Set(ctx, config)
 	resp.Diagnostics.Append(diags...)
 }

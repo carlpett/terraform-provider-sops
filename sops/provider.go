@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
+	"github.com/hashicorp/terraform-plugin-framework/ephemeral"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -37,4 +38,11 @@ func (p *SopsProvider) DataSources(_ context.Context) []func() datasource.DataSo
 
 func (p *SopsProvider) Resources(_ context.Context) []func() resource.Resource {
 	return nil
+}
+
+func (p *SopsProvider) EphemeralResources(_ context.Context) []func() ephemeral.EphemeralResource {
+	return []func() ephemeral.EphemeralResource{
+		newFileEphemeralResource,
+		newExternalEphemeral,
+	}
 }

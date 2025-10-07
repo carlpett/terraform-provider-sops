@@ -3,32 +3,31 @@ package sops
 import (
 	"context"
 
-	"github.com/hashicorp/terraform-plugin-framework/datasource"
-	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/ephemeral"
+	"github.com/hashicorp/terraform-plugin-framework/ephemeral/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-var _ datasource.DataSource = &externalDataSource{}
+var _ ephemeral.EphemeralResource = &externalEphemeralResource{}
 
-func newExternalDataSource() datasource.DataSource {
-	return &externalDataSource{}
+func newExternalEphemeral() ephemeral.EphemeralResource {
+	return &externalEphemeralResource{}
 }
 
-type externalDataSource struct{}
+type externalEphemeralResource struct{}
 
-type externalDataSourceModel struct {
+type externalEphemeralModel struct {
 	InputType types.String `tfsdk:"input_type"`
 	Source    types.String `tfsdk:"source"`
 	Data      types.Map    `tfsdk:"data"`
 	Raw       types.String `tfsdk:"raw"`
-	Id        types.String `tfsdk:"id"`
 }
 
-func (d *externalDataSource) Metadata(_ context.Context, _ datasource.MetadataRequest, resp *datasource.MetadataResponse) {
+func (d *externalEphemeralResource) Metadata(_ context.Context, _ ephemeral.MetadataRequest, resp *ephemeral.MetadataResponse) {
 	resp.TypeName = "sops_external"
 }
 
-func (d *externalDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+func (d *externalEphemeralResource) Schema(_ context.Context, _ ephemeral.SchemaRequest, resp *ephemeral.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		Description: "Decrypt sops-encrypted data from external commands",
 		Attributes: map[string]schema.Attribute{
@@ -52,16 +51,12 @@ func (d *externalDataSource) Schema(_ context.Context, _ datasource.SchemaReques
 				Computed:    true,
 				Sensitive:   true,
 			},
-			"id": schema.StringAttribute{
-				Description: "Unique identifier for this data source",
-				Computed:    true,
-			},
 		},
 	}
 }
 
-func (d *externalDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	var config externalDataSourceModel
+func (d *externalEphemeralResource) Open(ctx context.Context, req ephemeral.OpenRequest, resp *ephemeral.OpenResponse) {
+	var config externalEphemeralModel
 	diags := req.Config.Get(ctx, &config)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -86,8 +81,7 @@ func (d *externalDataSource) Read(ctx context.Context, req datasource.ReadReques
 
 	config.Data = m
 	config.Raw = types.StringValue(raw)
-	config.Id = types.StringValue("-")
 
-	diags = resp.State.Set(ctx, config)
+	diags = resp.Result.Set(ctx, config)
 	resp.Diagnostics.Append(diags...)
 }
