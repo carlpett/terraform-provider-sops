@@ -156,7 +156,7 @@ registry.terraform.io/-/sops
 With Terraform v1.11+ and the SOPS provider v1.3.0+, you can use an ephemeral resource instead of a data source.
 This prevents the contents of the secret file from being saved in the Terraform state.
 Ephemeral resources can be referenced in `write-only` arguments.
-```
+```hcl
 terraform {
   required_providers {
     sops = {
