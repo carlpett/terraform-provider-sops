@@ -2,7 +2,7 @@
 
 A Terraform plugin for using files encrypted with [Mozilla sops](https://github.com/mozilla/sops).
 
-**NOTE:** To prevent plaintext secrets from being written to disk, you *must* set up a secure remote state backend. See the [official docs](https://developer.hashicorp.com/terraform/language/state/sensitive-data) on _Sensitive Data in State_ for more information.
+**NOTE:** To prevent plaintext secrets from being written to disk, you *must* set up a secure remote state backend. See the [official docs](https://developer.hashicorp.com/terraform/language/state/sensitive-data) on _Sensitive Data in State_ for more information or use [ephemeral block](#example-using-ephemeral-block).
 
 ## Example
 
@@ -151,5 +151,34 @@ Could not retrieve the list of available versions for provider -/sops:
 provider registry registry.terraform.io does not have a provider named
 registry.terraform.io/-/sops
 ```
+
+## Example using ephemeral block
+With Terraform v1.11+ and the SOPS provider v1.3.0+, you can use an ephemeral resource instead of a data source.
+This prevents the contents of the secret file from being saved in the Terraform state.
+Ephemeral resources can be referenced in `write-only` arguments.
+```hcl
+terraform {
+  required_providers {
+    sops = {
+      source = "carlpett/sops"
+      version = "~> 1.3.0"
+    }
+  }
+}
+
+ephemeral "sops_file" "secrets" {
+  source_file = "demo-secret.enc.json"
+}
+
+resource "aws_ssm_parameter" "sops_secrets" {
+  name             = "my-secrets"
+  type             = "SecureString"
+  value_wo         = jsonencode(ephemeral.sops_file.secrets.raw)
+  value_wo_version = 1
+}
+```
+See documentation:
+* [Ephemeral block](https://developer.hashicorp.com/terraform/language/block/ephemeral)
+* [Write-Only arguments](https://developer.hashicorp.com/terraform/language/manage-sensitive-data/write-only)
 
 
