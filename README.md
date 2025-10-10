@@ -2,7 +2,7 @@
 
 A Terraform plugin for using files encrypted with [Mozilla sops](https://github.com/mozilla/sops).
 
-**NOTE:** To prevent plaintext secrets from being written to disk, you *must* set up a secure remote state backend. See the [official docs](https://developer.hashicorp.com/terraform/language/state/sensitive-data) on _Sensitive Data in State_ for more information.
+**NOTE:** To prevent plaintext secrets from being written to disk, you *must* set up a secure remote state backend. See the [official docs](https://developer.hashicorp.com/terraform/language/state/sensitive-data) on _Sensitive Data in State_ for more information or use [ephemeral block](#example-using-ephemeral-block).
 
 ## Example
 
@@ -151,5 +151,19 @@ Could not retrieve the list of available versions for provider -/sops:
 provider registry registry.terraform.io does not have a provider named
 registry.terraform.io/-/sops
 ```
+
+## Example using ephemeral block
+With Terraform v1.11+ and SOPS provider v1.3.0+ you can use `ephemeral` resource instead of `data` source.
+not saving content of the secret file into terraform state.
+Ephemeral resource can be referenced in `write-only` arguments.
+```
+ephemeral "sops_file" "secrets" {
+  source_file = "secrets.yml"
+}
+```
+
+See documentation:
+* Ephemeral block: https://developer.hashicorp.com/terraform/language/block/ephemeral
+* Write-Only arguments: https://developer.hashicorp.com/terraform/language/manage-sensitive-data/write-only
 
 
