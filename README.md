@@ -154,16 +154,31 @@ registry.terraform.io/-/sops
 
 ## Example using ephemeral block
 With Terraform v1.11+ and SOPS provider v1.3.0+ you can use `ephemeral` resource instead of `data` source.
-not saving content of the secret file into terraform state.
+This will avoid from saving content of the secret file into the terraform state.
 Ephemeral resource can be referenced in `write-only` arguments.
 ```
+terraform {
+  required_providers {
+    sops = {
+      source = "carlpett/sops"
+      version = "~> 1.3.0"
+    }
+  }
+}
+
 ephemeral "sops_file" "secrets" {
-  source_file = "secrets.yml"
+  source_file = "demo-secret.enc.json"
+}
+
+resource "aws_ssm_parameter" "sops_secrets" {
+  name             = "my-secrets"
+  type             = "SecureString"
+  value_wo         = jsonencode(ephemeral.sops_file.secrets.raw)
+  value_wo_version = 1
 }
 ```
-
 See documentation:
-* Ephemeral block: https://developer.hashicorp.com/terraform/language/block/ephemeral
-* Write-Only arguments: https://developer.hashicorp.com/terraform/language/manage-sensitive-data/write-only
+* (Ephemeral block)[https://developer.hashicorp.com/terraform/language/block/ephemeral]
+* (Write-Only arguments)[https://developer.hashicorp.com/terraform/language/manage-sensitive-data/write-only]
 
 
