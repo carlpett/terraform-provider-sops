@@ -29,10 +29,10 @@ func (d *externalEphemeralResource) Metadata(_ context.Context, _ ephemeral.Meta
 
 func (d *externalEphemeralResource) Schema(_ context.Context, _ ephemeral.SchemaRequest, resp *ephemeral.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Decrypt sops-encrypted data from external commands",
+		Description: "Read data from a sops-encrypted string. Useful if the data does not reside on disk locally (otherwise use `sops_file`).",
 		Attributes: map[string]schema.Attribute{
 			"input_type": schema.StringAttribute{
-				Description: "Type of the input data: json, yaml, dotenv, ini, raw",
+				Description: "`yaml`, `json` `dotenv` (`.env`), `ini` or `raw`, depending on the structure of the un-encrypted data.",
 				Optional:    true,
 			},
 			"source": schema.StringAttribute{
