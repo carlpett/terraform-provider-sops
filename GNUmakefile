@@ -25,6 +25,9 @@ build:
 	@echo ">> building binaries"
 	go build -o terraform-provider-sops
 
+generate-documentation:
+	cd tools; go generate ./...
+
 crossbuild: $(GOPATH)/bin/gox
 	@echo ">> cross-building"
 	gox -arch="$(CROSSBUILD_ARCH)" -os="$(CROSSBUILD_OS)" -osarch="$(addprefix !,$(subst _,/,$(SKIP_OSARCH)))" \
@@ -45,4 +48,4 @@ release: crossbuild
 	cd releases; sha256sum *.zip | tee terraform-provider-sops_$(RELEASE)_SHA256SUMS
 	gh release upload $(VERSION) "releases/terraform-provider-sops_$(RELEASE)_SHA256SUMS#terraform-provider-sops_$(RELEASE)_SHA256SUMS"
 
-.PHONY: all style vet test build crossbuild release
+.PHONY: all style vet test build crossbuild release generate-documentation
