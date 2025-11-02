@@ -3,6 +3,7 @@ package sops
 import (
 	"context"
 
+	"github.com/carlpett/terraform-provider-sops/sops/internal/checksum"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -21,6 +22,7 @@ type fileDataSourceModel struct {
 	SourceFile types.String `tfsdk:"source_file"`
 	Data       types.Map    `tfsdk:"data"`
 	Raw        types.String `tfsdk:"raw"`
+	Checksum   types.String `tfsdk:"checksum"`
 	Id         types.String `tfsdk:"id"`
 }
 
@@ -56,6 +58,10 @@ func (d *fileDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, r
 				Description: "Unique identifier for this data source",
 				Computed:    true,
 			},
+			"checksum": schema.StringAttribute{
+				Description: "Checksum of the decrypted data (MD5)",
+				Computed:    true,
+			},
 		},
 	}
 }
@@ -88,6 +94,8 @@ func (d *fileDataSource) Read(ctx context.Context, req datasource.ReadRequest, r
 	config.Data = m
 	config.Raw = types.StringValue(raw)
 	config.Id = types.StringValue("-")
+	calculatedChecksum := checksum.CalculateMD5(raw)
+	config.Checksum = types.StringValue(calculatedChecksum)
 
 	diags = resp.State.Set(ctx, config)
 	resp.Diagnostics.Append(diags...)

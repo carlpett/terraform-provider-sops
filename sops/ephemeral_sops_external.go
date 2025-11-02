@@ -3,6 +3,7 @@ package sops
 import (
 	"context"
 
+	"github.com/carlpett/terraform-provider-sops/sops/internal/checksum"
 	"github.com/hashicorp/terraform-plugin-framework/ephemeral"
 	"github.com/hashicorp/terraform-plugin-framework/ephemeral/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -21,6 +22,7 @@ type externalEphemeralModel struct {
 	Source    types.String `tfsdk:"source"`
 	Data      types.Map    `tfsdk:"data"`
 	Raw       types.String `tfsdk:"raw"`
+	Checksum  types.String `tfsdk:"checksum"`
 }
 
 func (d *externalEphemeralResource) Metadata(_ context.Context, _ ephemeral.MetadataRequest, resp *ephemeral.MetadataResponse) {
@@ -50,6 +52,10 @@ func (d *externalEphemeralResource) Schema(_ context.Context, _ ephemeral.Schema
 				Description: "Raw decrypted content",
 				Computed:    true,
 				Sensitive:   true,
+			},
+			"checksum": schema.StringAttribute{
+				Description: "Checksum of the decrypted data (MD5)",
+				Computed:    true,
 			},
 		},
 	}
@@ -81,6 +87,8 @@ func (d *externalEphemeralResource) Open(ctx context.Context, req ephemeral.Open
 
 	config.Data = m
 	config.Raw = types.StringValue(raw)
+	calculatedChecksum := checksum.CalculateMD5(raw)
+	config.Checksum = types.StringValue(calculatedChecksum)
 
 	diags = resp.Result.Set(ctx, config)
 	resp.Diagnostics.Append(diags...)

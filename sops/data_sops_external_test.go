@@ -37,6 +37,25 @@ func TestDataSourceSopsExternal(t *testing.T) {
 	})
 }
 
+func TestDataSourceSopsExternal_checksum(t *testing.T) {
+	wd, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	config := fmt.Sprintf(configTestDataSourceSopsExternal_basic, wd)
+	resource.UnitTest(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: config,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("data.sops_external.test_basic", "checksum", "a7d251211da07140112e7093dbdb27f0"),
+				),
+			},
+		},
+	})
+}
+
 const configTestDataSourceSopsExternal_nested = `
 data "sops_external" "test_nested" {
   source     = file("%s/test-fixtures/nested.yaml")
