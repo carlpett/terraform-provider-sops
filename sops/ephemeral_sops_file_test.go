@@ -209,3 +209,34 @@ func TestEphemeralSopsFile_json(t *testing.T) {
 		},
 	})
 }
+
+const configTestEphemeralSopsFile_checksum = `
+ephemeral "sops_file" "test_json" {
+  source_file = "%s/test-fixtures/basic.json"
+}
+
+provider "echo" {
+  data = ephemeral.sops_file.test_json.checksum
+}
+
+resource "echo" "checksum" {}
+`
+
+func TestEphemeralSopsFile_checksum(t *testing.T) {
+	wd, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	config := fmt.Sprintf(configTestEphemeralSopsFile_checksum, wd)
+	resource.UnitTest(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: config,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("echo.checksum", "data", "66c2c1fea5c50dff338cbf7867259b23"),
+				),
+			},
+		},
+	})
+}
