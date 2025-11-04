@@ -19,6 +19,7 @@ type externalDataSource struct{}
 type externalDataSourceModel struct {
 	InputType types.String `tfsdk:"input_type"`
 	Source    types.String `tfsdk:"source"`
+	Env       types.Map    `tfsdk:"env"`
 	Data      types.Map    `tfsdk:"data"`
 	Raw       types.String `tfsdk:"raw"`
 	Id        types.String `tfsdk:"id"`
@@ -39,6 +40,12 @@ func (d *externalDataSource) Schema(_ context.Context, _ datasource.SchemaReques
 			"source": schema.StringAttribute{
 				Description: "A string with sops-encrypted data",
 				Required:    true,
+			},
+			"env": schema.MapAttribute{
+				Description: "Environment variables to set before decrypting",
+				Optional:    true,
+				Sensitive:   true,
+				ElementType: types.StringType,
 			},
 
 			"data": schema.MapAttribute{
@@ -68,7 +75,7 @@ func (d *externalDataSource) Read(ctx context.Context, req datasource.ReadReques
 		return
 	}
 
-	data, raw, err := getExternalData(config.Source, config.InputType)
+	data, raw, err := getExternalData(config.Source, config.InputType, config.Env)
 	if err != nil {
 		if detailedErr, ok := err.(summaryError); ok {
 			resp.Diagnostics.AddError(detailedErr.Summary, detailedErr.Err.Error())

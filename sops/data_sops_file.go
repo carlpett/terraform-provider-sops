@@ -19,6 +19,7 @@ type fileDataSource struct{}
 type fileDataSourceModel struct {
 	InputType  types.String `tfsdk:"input_type"`
 	SourceFile types.String `tfsdk:"source_file"`
+	Env        types.Map    `tfsdk:"env"`
 	Data       types.Map    `tfsdk:"data"`
 	Raw        types.String `tfsdk:"raw"`
 	Id         types.String `tfsdk:"id"`
@@ -39,6 +40,12 @@ func (d *fileDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, r
 			"source_file": schema.StringAttribute{
 				Description: "Path to the encrypted file",
 				Required:    true,
+			},
+			"env": schema.MapAttribute{
+				Description: "Environment variables to set before decrypting",
+				Optional:    true,
+				Sensitive:   true,
+				ElementType: types.StringType,
 			},
 
 			"data": schema.MapAttribute{
@@ -68,7 +75,7 @@ func (d *fileDataSource) Read(ctx context.Context, req datasource.ReadRequest, r
 		return
 	}
 
-	data, raw, err := getFileData(config.SourceFile, config.InputType)
+	data, raw, err := getFileData(config.SourceFile, config.InputType, config.Env)
 	if err != nil {
 		if detailedErr, ok := err.(summaryError); ok {
 			resp.Diagnostics.AddError(detailedErr.Summary, detailedErr.Err.Error())
