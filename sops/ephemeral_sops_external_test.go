@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/terraform"
 )
 
 const configTestEphemeralSopsExternal_basic = `
@@ -209,6 +210,102 @@ func TestEphemeralSopsExternal_json(t *testing.T) {
 					resource.TestCheckResourceAttr("echo.test_json", "data.float", "0.2"),
 					resource.TestCheckResourceAttr("echo.test_json", "data.bool", "true"),
 					resource.TestCheckResourceAttr("echo.test_json", "data.null", "null"),
+				),
+			},
+		},
+	})
+}
+
+// age1r6eadvpf2cq967pcgc35ahfkkphqs6ln9frmt6nma52z6tq7zddsszzwrg
+const configTestEphemeralSopsExternal_envAge0 = `
+ephemeral "sops_external" "test_env_age0" {
+  source     = file("%s/test-fixtures/basic.age0.yaml")
+  input_type = "yaml"
+  env = {
+    SOPS_AGE_KEY = "AGE-SECRET-KEY-14CSLELDXVWL48V82MSDF8EPVN9KWKKCQ38ZQ80V7Q8ZK7EW26WGQ7W29YP"
+  }
+}
+
+provider "echo" {
+  data = ephemeral.sops_external.test_env_age0.data
+}
+
+resource "echo" "test_env_age0" {}
+`
+
+func TestEphemeralSopsExternal_envAge0(t *testing.T) {
+	wd, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	config := fmt.Sprintf(configTestEphemeralSopsExternal_envAge0, wd)
+
+	resource.UnitTest(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: config,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("echo.test_env_age0", "data.hello", "world"),
+					resource.TestCheckResourceAttr("echo.test_env_age0", "data.integer", "0"),
+					resource.TestCheckResourceAttr("echo.test_env_age0", "data.float", "0.2"),
+					resource.TestCheckResourceAttr("echo.test_env_age0", "data.bool", "true"),
+					resource.TestCheckResourceAttr("echo.test_env_age0", "data.null_value", "null"),
+
+					func(s *terraform.State) error {
+						if v := os.Getenv("SOPS_AGE_KEY"); v != "" {
+							return fmt.Errorf("expected SOPS_AGE_KEY unset after data read, got %q", v)
+						}
+						return nil
+					},
+				),
+			},
+		},
+	})
+}
+
+// age120rd0a9p49wtru227l4889q6qzcxnlcwrmdgukk94453uzmyqexshcmmzc
+const configTestEphemeralSopsExternal_envAge1 = `
+ephemeral "sops_external" "test_env_age1" {
+  source     = file("%s/test-fixtures/basic.age1.yaml")
+  input_type = "yaml"
+  env = {
+    SOPS_AGE_KEY = "AGE-SECRET-KEY-1NERY6H8EQDUTP2WQML30ME8NX89DATTUJC0SJ5RMDZGDL735EJ0SJ8JGRT"
+  }
+}
+
+provider "echo" {
+  data = ephemeral.sops_external.test_env_age1.data
+}
+
+resource "echo" "test_env_age1" {}
+`
+
+func TestEphemeralSopsExternal_envAge1(t *testing.T) {
+	wd, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	config := fmt.Sprintf(configTestEphemeralSopsExternal_envAge1, wd)
+
+	resource.UnitTest(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: config,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("echo.test_env_age1", "data.hello", "world"),
+					resource.TestCheckResourceAttr("echo.test_env_age1", "data.integer", "0"),
+					resource.TestCheckResourceAttr("echo.test_env_age1", "data.float", "0.2"),
+					resource.TestCheckResourceAttr("echo.test_env_age1", "data.bool", "true"),
+					resource.TestCheckResourceAttr("echo.test_env_age1", "data.null_value", "null"),
+
+					func(s *terraform.State) error {
+						if v := os.Getenv("SOPS_AGE_KEY"); v != "" {
+							return fmt.Errorf("expected SOPS_AGE_KEY unset after data read, got %q", v)
+						}
+						return nil
+					},
 				),
 			},
 		},

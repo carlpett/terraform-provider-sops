@@ -1,0 +1,7 @@
+creation_rules:
+  - path_regex: basic.age0.yaml
+    age: >-
+      age1r6eadvpf2cq967pcgc35ahfkkphqs6ln9frmt6nma52z6tq7zddsszzwrg
+  - path_regex: basic.age1.yaml
+    age: >-
+      age120rd0a9p49wtru227l4889q6qzcxnlcwrmdgukk94453uzmyqexshcmmzc

@@ -36,6 +36,7 @@ output "root-value-hello" {
 
 ### Optional
 
+- `env` (Map of String, Sensitive) Environment variables to set before decrypting
 - `input_type` (String) `yaml`, `json` `dotenv` (`.env`), `ini` or `raw`, depending on the structure of the un-encrypted data.
 
 ### Read-Only

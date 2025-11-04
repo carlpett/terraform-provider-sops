@@ -19,6 +19,7 @@ type externalEphemeralResource struct{}
 type externalEphemeralModel struct {
 	InputType types.String `tfsdk:"input_type"`
 	Source    types.String `tfsdk:"source"`
+	Env       types.Map    `tfsdk:"env"`
 	Data      types.Map    `tfsdk:"data"`
 	Raw       types.String `tfsdk:"raw"`
 }
@@ -38,6 +39,12 @@ func (d *externalEphemeralResource) Schema(_ context.Context, _ ephemeral.Schema
 			"source": schema.StringAttribute{
 				Description: "A string with sops-encrypted data",
 				Required:    true,
+			},
+			"env": schema.MapAttribute{
+				Description: "Environment variables to set before decrypting",
+				Optional:    true,
+				Sensitive:   true,
+				ElementType: types.StringType,
 			},
 
 			"data": schema.MapAttribute{
@@ -63,7 +70,7 @@ func (d *externalEphemeralResource) Open(ctx context.Context, req ephemeral.Open
 		return
 	}
 
-	data, raw, err := getExternalData(config.Source, config.InputType)
+	data, raw, err := getExternalData(config.Source, config.InputType, config.Env)
 	if err != nil {
 		if detailedErr, ok := err.(summaryError); ok {
 			resp.Diagnostics.AddError(detailedErr.Summary, detailedErr.Err.Error())

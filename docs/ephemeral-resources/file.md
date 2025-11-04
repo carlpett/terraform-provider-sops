@@ -44,6 +44,7 @@ output "nested_json_value" {
 
 ### Optional
 
+- `env` (Map of String, Sensitive) Environment variables to set before decrypting
 - `input_type` (String) The provider will use the file extension to determine how to unmarshal the data. If your file does not have the usual extension, set this argument to `yaml`, `json`, `dotenv` (`.env`), `ini` accordingly, or `raw` if the encrypted data is encoded differently.
 
 ### Read-Only
