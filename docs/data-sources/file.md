@@ -29,10 +29,11 @@ output "nested-json-value" {
 
 ## Argument Reference
 
-* `source_file` - (Required) Path to the encrypted file
-* `input_type` - (Optional) The provider will use the file extension to determine how to unmarshal the data. If your file does not have the usual extension, set this argument to `yaml`, `json`, `dotenv` (`.env`), `ini` accordingly, or `raw` if the encrypted data is encoded differently.
+- `source_file` - (Required) Path to the encrypted file
+- `input_type` - (Optional) The provider will use the file extension to determine how to unmarshal the data. If your file does not have the usual extension, set this argument to `yaml`, `json`, `dotenv` (`.env`), `ini` accordingly, or `raw` if the encrypted data is encoded differently.
+- `env` - (Optional) Environment variables to set before decrypting
 
 ## Attribute Reference
 
-* `data` - The unmarshalled data as a dictionary. Use dot-separated keys to access nested data.
-* `raw` - The entire unencrypted file as a string.
+- `data` - The unmarshalled data as a dictionary. Use dot-separated keys to access nested data.
+- `raw` - The entire unencrypted file as a string.

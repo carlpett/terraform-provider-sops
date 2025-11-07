@@ -23,10 +23,11 @@ output "root-value-hello" {
 
 ## Argument Reference
 
-* `source` - (Required) A string with sops-encrypted data
-* `input_type` - (Required) `yaml`, `json` `dotenv` (`.env`), `ini` or `raw`, depending on the structure of the un-encrypted data.
+- `source` - (Required) A string with sops-encrypted data
+- `input_type` - (Required) `yaml`, `json` `dotenv` (`.env`), `ini` or `raw`, depending on the structure of the un-encrypted data.
+- `env` - (Optional) Environment variables to set before decrypting
 
 ## Attribute Reference
 
-* `data` - The unmarshalled data as a dictionary. Use dot-separated keys to access nested data.
-* `raw` - The entire unencrypted file as a string.
+- `data` - The unmarshalled data as a dictionary. Use dot-separated keys to access nested data.
+- `raw` - The entire unencrypted file as a string.
