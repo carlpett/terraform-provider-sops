@@ -1,3 +1,8 @@
+---
+page_title: "terraform-sops on older Terraform versions"
+description: |-
+  Migration guide for moving from a old Terraform version
+---
 # terraform-sops on older Terraform versions
 ## Migrating existing states
 To migrate a state from Terraform 0.12 or older, there is a need to change how the provider is referenced. Terraform provides a command to do this migration:
