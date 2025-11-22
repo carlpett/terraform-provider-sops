@@ -120,6 +120,8 @@ Building and testing is most easily performed with `make build` and `make test` 
 
 The PGP key used for encrypting the test cases is found in `test/testing-key.pgp`. You can import it with `gpg --import test/testing-key.pgp`.
 
+To create the Terraform-registry-documentation, simply run `make generate-documentation`
+
 ## Transitioning to Terraform 0.13 provider required blocks.
 
 With Terraform 0.13, providers are available/downloaded via the [terraform registry](https://registry.terraform.io/providers/carlpett/sops/latest) via a required_providers block.

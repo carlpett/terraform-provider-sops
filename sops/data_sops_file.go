@@ -30,30 +30,32 @@ func (d *fileDataSource) Metadata(_ context.Context, _ datasource.MetadataReques
 
 func (d *fileDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Decrypt sops-encrypted files",
+		Description: "Read data from a sops-encrypted file on disk.",
 		Attributes: map[string]schema.Attribute{
 			"input_type": schema.StringAttribute{
-				Description: "Type of the input file: json, yaml, dotenv, ini, raw",
-				Optional:    true,
+				Description: "The provider will use the file extension to determine how to unmarshal the data. If your file " +
+					"does not have the usual extension, set this argument to `yaml`, `json`, `dotenv` (`.env`), `ini` accordingly, " +
+					"or `raw` if the encrypted data is encoded differently.",
+				Optional: true,
 			},
 			"source_file": schema.StringAttribute{
-				Description: "Path to the encrypted file",
+				Description: "Path to the encrypted file.",
 				Required:    true,
 			},
 
 			"data": schema.MapAttribute{
-				Description: "Decrypted data",
+				Description: "The unmarshalled data as a dictionary. Use dot-separated keys to access nested data.",
 				Computed:    true,
 				Sensitive:   true,
 				ElementType: types.StringType,
 			},
 			"raw": schema.StringAttribute{
-				Description: "Raw decrypted content",
+				Description: "The entire unencrypted file as a string.",
 				Computed:    true,
 				Sensitive:   true,
 			},
 			"id": schema.StringAttribute{
-				Description: "Unique identifier for this data source",
+				Description: "Unique identifier for this data source.",
 				Computed:    true,
 			},
 		},
