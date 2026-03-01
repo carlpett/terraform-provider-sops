@@ -24,7 +24,7 @@ func (p *SopsProvider) Metadata(_ context.Context, _ provider.MetadataRequest, r
 
 func (p *SopsProvider) Schema(_ context.Context, _ provider.SchemaRequest, resp *provider.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "A Terraform plugin for using files encrypted with [Mozilla sops](https://github.com/mozilla/sops).",
+		Description: "A Terraform plugin for using files encrypted with [SOPS](https://github.com/getsops/sops).",
 	}
 }
 
