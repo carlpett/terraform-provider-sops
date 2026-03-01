@@ -6,21 +6,18 @@ on:
     branches:
       - master
 
-env:
-  GO_VERSION: "1.24"
-
 jobs:
   build-and-test:
     name: Build and Test
     runs-on: ubuntu-latest
     steps:
-      - name: Setup golang ${{ env.GO_VERSION }}
-        uses: actions/setup-go@v3
-        with:
-          go-version: ${{ env.GO_VERSION }}
-
       - name: Checkout
         uses: actions/checkout@v3
+
+      - name: Setup go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: 'go.mod'
 
       - name: Build
         run: go build -v .
@@ -33,3 +30,13 @@ jobs:
 
       - name: Crossbuild
         run: make crossbuild
+
+  dependency-check:
+    name: Verify dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - name: govulncheck
+        uses: golang/govulncheck-action@v1
+        with:
+          go-version-input: '' # By default set to 'stable', which takes priority over go-version-file
+          go-version-file: 'go.mod'
