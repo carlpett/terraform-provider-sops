@@ -44,8 +44,11 @@ release: crossbuild
 		zip -j releases/terraform-provider-sops_$(RELEASE)_$$OSARCH.zip binaries/$(VERSION)/$$OSARCH/terraform-provider-sops_* > /dev/null; \
 		gh release upload $(VERSION) "releases/terraform-provider-sops_$(RELEASE)_$$OSARCH.zip#terraform-provider-sops_$(RELEASE)_$$OSARCH.zip"; \
 	done
+	@echo ">>> uploading manifest"
+	cp terraform-registry-manifest.json releases/terraform-provider-sops_$(RELEASE)_manifest.json
+	gh release upload $(VERSION) "releases/terraform-provider-sops_$(RELEASE)_manifest.json#terraform-provider-sops_$(RELEASE)_manifest.json"
 	@echo ">>> generating sha256sums:"
-	cd releases; sha256sum *.zip | tee terraform-provider-sops_$(RELEASE)_SHA256SUMS
+	cd releases; sha256sum *.zip terraform-provider-sops_$(RELEASE)_manifest.json | tee terraform-provider-sops_$(RELEASE)_SHA256SUMS
 	gh release upload $(VERSION) "releases/terraform-provider-sops_$(RELEASE)_SHA256SUMS#terraform-provider-sops_$(RELEASE)_SHA256SUMS"
 
 .PHONY: all style vet test build crossbuild release generate-documentation
