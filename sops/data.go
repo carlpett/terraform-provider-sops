@@ -26,7 +26,7 @@ func newSummaryError(summary string, err error) summaryError {
 	}
 }
 
-func getFileData(sourceFile types.String, inputType types.String) (data map[string]string, raw string, err error) {
+func getFileData(sourceFile types.String, inputType types.String, env types.Map) (data map[string]string, raw string, err error) {
 	sourceFileValue := sourceFile.ValueString()
 	content, err := os.ReadFile(sourceFileValue)
 	if err != nil {
@@ -55,14 +55,14 @@ func getFileData(sourceFile types.String, inputType types.String) (data map[stri
 		return nil, "", newSummaryError("Invalid input type", err)
 	}
 
-	data, raw, err = readData(content, format)
+	data, raw, err = readData(content, format, env)
 	if err != nil {
 		return nil, "", newSummaryError("Error reading data", err)
 	}
 	return data, raw, nil
 }
 
-func getExternalData(source types.String, inputType types.String) (data map[string]string, raw string, err error) {
+func getExternalData(source types.String, inputType types.String, env types.Map) (data map[string]string, raw string, err error) {
 	content, err := io.ReadAll(strings.NewReader(source.ValueString()))
 	if err != nil {
 		return nil, "", newSummaryError("Error reading source", err)
@@ -73,7 +73,7 @@ func getExternalData(source types.String, inputType types.String) (data map[stri
 		return nil, "", newSummaryError("Invalid input type", err)
 	}
 
-	data, raw, err = readData(content, format)
+	data, raw, err = readData(content, format, env)
 	if err != nil {
 		return nil, "", newSummaryError("Error reading data", err)
 	}
