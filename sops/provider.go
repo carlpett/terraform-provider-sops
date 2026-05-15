@@ -39,7 +39,9 @@ func (p *SopsProvider) DataSources(_ context.Context) []func() datasource.DataSo
 }
 
 func (p *SopsProvider) Resources(_ context.Context) []func() resource.Resource {
-	return nil
+	return []func() resource.Resource{
+		newHashResource,
+	}
 }
 
 func (p *SopsProvider) EphemeralResources(_ context.Context) []func() ephemeral.EphemeralResource {
