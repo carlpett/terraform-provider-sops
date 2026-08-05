@@ -1,0 +1,3 @@
+creation_rules:
+  - path_regex: resource_.*\.yaml$
+    pgp: 3CE5CC7219D6597CE6488BF1BF36CD3D0749A11A
