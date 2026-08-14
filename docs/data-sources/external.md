@@ -42,4 +42,6 @@ output "root-value-hello" {
 
 - `data` (Map of String, Sensitive) Decrypted data
 - `id` (String) Unique identifier for this data source
+- `last_modified` (String) The `lastmodified` timestamp recorded in the sops metadata, in RFC3339 format. Useful as a version identifier, for example as the `wo_version` of a write-only argument (see also `last_modified_unix`).
+- `last_modified_unix` (Number) The `lastmodified` timestamp recorded in the sops metadata, as a Unix epoch (seconds). Directly usable as the integer `wo_version` of a write-only argument, without needing to parse the RFC3339 `last_modified` value.
 - `raw` (String, Sensitive) Raw decrypted content

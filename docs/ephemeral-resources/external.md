@@ -41,4 +41,6 @@ output "root_value_hello" {
 ### Read-Only
 
 - `data` (Map of String, Sensitive) Decrypted data
+- `last_modified` (String) The `lastmodified` timestamp recorded in the sops metadata, in RFC3339 format. As an ephemeral resource attribute it is itself ephemeral, so — unlike the `sops_file`/`sops_external` data source's `last_modified` — it cannot be assigned to a state-persisted `wo_version` argument.
+- `last_modified_unix` (Number) The `lastmodified` timestamp recorded in the sops metadata, as a Unix epoch (seconds). Like `last_modified`, this is an ephemeral attribute and so cannot be assigned to a state-persisted `wo_version` argument.
 - `raw` (String, Sensitive) Raw decrypted content

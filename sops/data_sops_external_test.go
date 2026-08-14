@@ -31,6 +31,8 @@ func TestDataSourceSopsExternal(t *testing.T) {
 					resource.TestCheckResourceAttr("data.sops_external.test_basic", "data.float", "0.2"),
 					resource.TestCheckResourceAttr("data.sops_external.test_basic", "data.bool", "true"),
 					resource.TestCheckResourceAttr("data.sops_external.test_basic", "data.null_value", "null"),
+					resource.TestCheckResourceAttr("data.sops_external.test_basic", "last_modified", "2019-04-26T18:43:59Z"),
+					resource.TestCheckResourceAttr("data.sops_external.test_basic", "last_modified_unix", "1556304239"),
 				),
 			},
 		},

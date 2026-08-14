@@ -2,6 +2,7 @@ package sops
 
 import (
 	"context"
+	"time"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
@@ -17,11 +18,13 @@ func newExternalDataSource() datasource.DataSource {
 type externalDataSource struct{}
 
 type externalDataSourceModel struct {
-	InputType types.String `tfsdk:"input_type"`
-	Source    types.String `tfsdk:"source"`
-	Data      types.Map    `tfsdk:"data"`
-	Raw       types.String `tfsdk:"raw"`
-	Id        types.String `tfsdk:"id"`
+	InputType        types.String `tfsdk:"input_type"`
+	Source           types.String `tfsdk:"source"`
+	Data             types.Map    `tfsdk:"data"`
+	Raw              types.String `tfsdk:"raw"`
+	LastModified     types.String `tfsdk:"last_modified"`
+	LastModifiedUnix types.Int64  `tfsdk:"last_modified_unix"`
+	Id               types.String `tfsdk:"id"`
 }
 
 func (d *externalDataSource) Metadata(_ context.Context, _ datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -52,6 +55,18 @@ func (d *externalDataSource) Schema(_ context.Context, _ datasource.SchemaReques
 				Computed:    true,
 				Sensitive:   true,
 			},
+			"last_modified": schema.StringAttribute{
+				Description: "The `lastmodified` timestamp recorded in the sops metadata, in RFC3339 format. " +
+					"Useful as a version identifier, for example as the `wo_version` of a write-only argument " +
+					"(see also `last_modified_unix`).",
+				Computed: true,
+			},
+			"last_modified_unix": schema.Int64Attribute{
+				Description: "The `lastmodified` timestamp recorded in the sops metadata, as a Unix epoch (seconds). " +
+					"Directly usable as the integer `wo_version` of a write-only argument, without needing to parse " +
+					"the RFC3339 `last_modified` value.",
+				Computed: true,
+			},
 			"id": schema.StringAttribute{
 				Description: "Unique identifier for this data source",
 				Computed:    true,
@@ -68,7 +83,7 @@ func (d *externalDataSource) Read(ctx context.Context, req datasource.ReadReques
 		return
 	}
 
-	data, raw, err := getExternalData(config.Source, config.InputType)
+	result, err := getExternalData(config.Source, config.InputType)
 	if err != nil {
 		if detailedErr, ok := err.(summaryError); ok {
 			resp.Diagnostics.AddError(detailedErr.Summary, detailedErr.Err.Error())
@@ -78,14 +93,16 @@ func (d *externalDataSource) Read(ctx context.Context, req datasource.ReadReques
 		return
 	}
 
-	m, mapDiags := types.MapValueFrom(ctx, types.StringType, data)
+	m, mapDiags := types.MapValueFrom(ctx, types.StringType, result.data)
 	resp.Diagnostics.Append(mapDiags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
 	config.Data = m
-	config.Raw = types.StringValue(raw)
+	config.Raw = types.StringValue(result.raw)
+	config.LastModified = types.StringValue(result.lastModified.Format(time.RFC3339))
+	config.LastModifiedUnix = types.Int64Value(result.lastModified.Unix())
 	config.Id = types.StringValue("-")
 
 	diags = resp.State.Set(ctx, config)

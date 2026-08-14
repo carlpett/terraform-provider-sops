@@ -214,3 +214,39 @@ func TestEphemeralSopsExternal_json(t *testing.T) {
 		},
 	})
 }
+
+const configTestEphemeralSopsExternal_lastmodified = `
+ephemeral "sops_external" "test_lastmodified" {
+  source     = file("%s/test-fixtures/basic.yaml")
+  input_type = "yaml"
+}
+
+provider "echo" {
+  data = {
+    rfc3339 = ephemeral.sops_external.test_lastmodified.last_modified
+    unix    = ephemeral.sops_external.test_lastmodified.last_modified_unix
+  }
+}
+
+resource "echo" "test_lastmodified" {}
+`
+
+func TestEphemeralSopsExternal_lastmodified(t *testing.T) {
+	wd, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	config := fmt.Sprintf(configTestEphemeralSopsExternal_lastmodified, wd)
+	resource.UnitTest(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: config,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("echo.test_lastmodified", "data.rfc3339", "2019-04-26T18:43:59Z"),
+					resource.TestCheckResourceAttr("echo.test_lastmodified", "data.unix", "1556304239"),
+				),
+			},
+		},
+	})
+}

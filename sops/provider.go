@@ -35,6 +35,8 @@ func (p *SopsProvider) DataSources(_ context.Context) []func() datasource.DataSo
 	return []func() datasource.DataSource{
 		newFileDataSource,
 		newExternalDataSource,
+		newFileMetadataDataSource,
+		newExternalMetadataDataSource,
 	}
 }
 
